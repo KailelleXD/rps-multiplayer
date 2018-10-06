@@ -1,0 +1,43 @@
+/*
+font-family: 'Bangers', cursive;
+font-family: 'Mirza', cursive;
+*/
+
+body {
+    background-image: url("https://picsum.photos/1920/1080");
+    font-family: 'Mirza', cursive;
+    font-size: 105%;
+    max-width: 1080px;
+    margin: auto;
+}
+
+h1 {
+    font-family: 'Bangers', cursive;
+}
+
+ul {
+    list-style-position: inside;
+}
+
+.container {
+    max-width: 980px;
+    border-color: black;
+    border-style: solid;
+    border-width: medium;
+}
+
+.rps-image {
+    border-radius: 25px;
+    border-color: white;
+    border-style: solid;
+    border-width: thick;
+}
+
+.border-round {
+    border-radius: 25px;
+}
+
+#start-screen-info {
+    color: darkred;
+    font-family: 'Courier New', Courier, monospace;
+}
