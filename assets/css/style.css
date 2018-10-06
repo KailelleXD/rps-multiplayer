@@ -26,6 +26,13 @@ ul {
     border-width: medium;
 }
 
+.chat-panel {
+    border-radius: 25px;
+    border-color: black;
+    border-style: solid;
+    border-width: medium;
+}
+
 .rps-image {
     border-radius: 25px;
     border-color: white;
