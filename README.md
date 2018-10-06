@@ -45,6 +45,10 @@ This project is being created for a homework assignnment through my UCLAx coding
 #### This Document to be revised/updated as project progresses.
 
 ### Update-log:
+#### 10/06/2018 - 10:07am
+* In-Process:
+    * game-screen.html (Working on Grid for Game Panel, and Chat Panel)
+
 #### 10/05/2018 - 11:00pm
 * Complete:
     * index.html (start screen w/placeholder images)
