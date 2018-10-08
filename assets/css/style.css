@@ -11,7 +11,7 @@ body {
     margin: auto;
 }
 
-h1 {
+h1, h3 {
     font-family: 'Bangers', cursive;
 }
 
@@ -44,7 +44,58 @@ ul {
     border-radius: 25px;
 }
 
+.title-round {
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border: black solid thin;
+}
+
+.chat-area {
+    height: 50%;
+}
+
+.chat-panel {
+    background-color: rgb(21, 21, 85);
+}
+
+.center-block {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.bg-decor-shape-left {
+    background: darkred;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    border-color: black;
+    border-style: solid;
+    border-width: medium;
+}
+
+.bg-decor-shape-right {
+    background: darkred;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    border-color: black;
+    border-style: solid;
+    border-width: medium;
+}
+
+.panel-border-dark {
+    background: black;
+    border-color: black;
+    border-style: solid;
+    border-width: thin;
+}
+
 #start-screen-info {
     color: darkred;
     font-family: 'Courier New', Courier, monospace;
 }
+
+.game-info-panel {
+    color: rgb(235, 225, 221);
+}
+
+

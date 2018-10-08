@@ -26,76 +26,156 @@
     <div class="row justify-content-center">
         
         <!-- Main Column 1 -->
-        <div class="content-wrapper col-4 bg-primary mx-1 rps-image">
+        <div class="content-wrapper col-4 bg-primary mx-1 p-1 rps-image">
             
             <!-- Sub Row 1 (Player Name, Top Display Panel, Round Number) -->
-            <div class="row border border-dark">
+            <div class="row mt-1 mb-3">
                 
                 <!-- Col 1 (Player Name) -->
-                <div class="col-4 border border-primary p-5"></div>
+                <div class="col-4">
+                    <div>
+                        <p class="d-flex align-items-start justify-content-center my-0 py-0 ">Player 1:</p>
+                        <p class="d-flex align-items-start justify-content-center my-0 py-0 ">Stevo</p>
+                    </div>
+                </div>
                 
                 <!-- Col 2 (Top Display Panel)-->
-                <div class="col-4 border border-secondary p-5"></div>
+                <div class="col-4 d-flex align-items-center justify-content-center">
+                    <h3 class="d-flex align-items-start justify-content-center bg-light border border-dark rounded m-0 px-3">SCISSORS</h3>
+                </div>
                 
                 <!-- Col 3 (Round Number)-->
-                <div class="col-4 border border-primary p-5"></div>
+                <div class="col-4">
+                    <div>
+                        <p class="d-flex align-items-start justify-content-center my-0 ">Round:</p>
+                        <p class="d-flex align-items-start justify-content-center my-0 ">1</p>
+                    </div>
+                </div>
             </div>
 
             <!-- Sub Row 2 (Player 1 Choice, Winner Panel, Player 2 Choice) -->
-            <div class="row border border-white">
+            <div class="row mb-2">
                 
                 <!-- Col 1 (Player 1 Choice) -->
-                <div class="col-4 border border-secondary p-5"></div>
+                <div class="col-4 m-0 p-0">
+                    <img src="assets/images/scissors.jpg" class="center-block border border-light rounded mt-1">
+                </div>
                 
-                <!-- Col 2 (Winner Pannel) -->
-                <div class="col-4 border border-primary p-5"></div>
+                <!-- Col 2 (Winner Panel) -->
+                <div class="col-4 mt-1 m-0 p-0">
+                    <div class="text-center bg-light border border-dark rounded py-2"><h4>Player 1<br>Wins!</h4>
+                    </div>
+                </div>
                 
                 <!-- Col 3 (Player 2 Choice) -->
-                <div class="col-4 border border-secondary p-5"></div>
+                <div class="col-4 m-0 p-0">
+                    <img src="assets/images/paper.jpg" class="center-block border border-light rounded mt-1">
+                </div>
             </div>
 
             <!-- Sub Row 3 (Decorative shape, Wins/Losses Panel, Decorative shape) -->
-            <div class="row border border-dark">
+            <div class="row mb-3">
                 
                 <!-- Col 1 (Decorative shape)-->
-                <div class="col-4 border border-primary p-5"></div>
+                <div class="col-4 m-0 p-0">
+                    <div class="bg-decor-shape-left mr-3 ml-1 mt-3 py-4"></div>
+                </div>
                 
                 <!-- Col 2 (Win/Losses Panel) -->
-                <div class="col-4 border border-secondary p-5"></div>
+                <div class="col-4 mt-3 m-0 p-0">
+
+                    <!-- Sub sub Row 1 -->
+                    <div class="row panel-border-dark d-flex justify-content-center m-0">
+                        <!-- Sub Col 1 -->
+                        <div class="col-3 bg-dark text-light d-flex justify-content-center">0</div>
+                        <!-- Sub Col 2 -->
+                        <div class="col-3 bg-light d-flex justify-content-center m-0 py-0 px-4">Wins</div>
+                        <!-- Sub Col 3 -->
+                        <div class="col-3 bg-dark text-light d-flex justify-content-center">0</div>
+                    </div>
+
+                    <!-- Sub sub Row 2 -->
+                    <div class="row panel-border-dark d-flex justify-content-center m-0">
+                        <!-- Sub Col 1 -->
+                        <div class="col-3 bg-light d-flex justify-content-center">0</div>
+                        <!-- Sub Col 2 -->
+                        <div class="col-3 bg-dark text-light d-flex justify-content-center m-0 py-0 px-4">Losses</div>
+                        <!-- Sub Col 3 -->
+                        <div class="col-3 bg-light d-flex justify-content-center">0</div>
+                    </div>
+
+                </div>
                 
                 <!-- Col 3 (Decorative shape) -->
-                <div class="col-4 border border-primary p-5"></div>
+                <div class="col-4 m-0 p-0">
+                    <div class="bg-decor-shape-right ml-3 mr-1 mt-3 py-4"></div>
+                </div>
             </div>
 
             <!-- Sub Row 4 (Player Choices: [ROCK] [PAPER] [SCISSORS]) -->
-            <div class="row border border-white">
+            <div class="row mb-2 mx-2">
                 
                 <!-- Col 1 (Player Choice: [ROCK]) -->
-                <div class="col-4 border border-secondary p-5"></div>
+                <div class="col-4 m-0 p-0">
+                    <img src="assets/images/rock.jpg" class="center-block border border-light rounded mt-1">
+                </div>
                 
                 <!-- Col 2 (Player Choice: [PAPER])-->
-                <div class="col-4 border border-primary p-5"></div>
+                <div class="col-4 m-0 p-0">
+                    <img src="assets/images/paper.jpg" class="center-block border border-light rounded mt-1">
+                </div>
                 
                 <!-- Col 3 (Player Choice: [SCISSORS])-->
-                <div class="col-4 border border-secondary p-5"></div>
+                <div class="col-4 m-0 p-0">
+                    <img src="assets/images/scissors.jpg" class="center-block border border-light rounded mt-1">
+                </div>
             </div>
 
             <!-- Sub Row 5 (Ready Button, Reset Button) -->
-            <div class="row border border-dark">
+            <div class="row mb-2 mx-1">
                 
                 <!-- Col 1 (Ready Button) -->
-                <div class="col-6 border border-warning p-5"></div>
+                <div class="col-6 bg-secondary rounded border border-dark d-flex justify-content-center">READY</div>
                 
                 <!-- Col 2 (Reset Button) -->
-                <div class="col-6 border border-danger p-5"></div>
+                <div class="col-6 bg-secondary rounded border border-dark d-flex justify-content-center">RESET</div>
             </div>
 
             
         </div>
 
         <!-- Main Column 2 -->
-        <div class="content-wrapper col-6 bg-primary mx-1 p-5 chat-panel">
+        <div class="content-wrapper col-6 mx-1 chat-panel">
 
+            <!-- Row 1 (Game Title) -->
+            <div class="row bg-light title-round px-3"><H1 class="pt-2">ROCK, PAPER, SCISSORS... GO!!!</H1></div>
+
+            <!-- Row 2 (Chat Area) -->
+            <div class="row chat-area bg-primary pt-2">
+                <div id="chat-display-area">
+                    <div class="mx-2">-</div>
+                    <div class="mx-2">-</div>
+                    <div class="mx-2">-</div>
+                    <div class="mx-2">-</div>
+                    <div class="mx-2">-</div>
+                    <div class="mx-2">-</div>
+                    <div class="mx-2">-</div>
+                </div>
+            </div>
+
+            <!-- Row 3 (Chat Entry) -->
+            <div class="row chat-entry d-flex align-items-end">
+                <div class="input-group input-group-sm mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-sm">CHAT</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+                </div>
+            </div>
+            <div class="game-info-panel m-0 p-0">
+                <div>~ Player 1: Stevo, has joined the game.</div>
+                <div>~ Waiting for Player 2...</div>
+            </div>
         </div>
 
     </div>
