@@ -1,0 +1,9 @@
+Is there a method to clear the values of specific key value pairs within firebase realtime database?
+
+Refresh - How to use the .css jQuery method to change the display to hidden. How do I unhide? .clear()??
+
+Refresh - How to toggle/cycle between images using data-type and data-* (for different img sources) (reference the giphy-app)
+
+Firebase realtime database, how to push to the database to auto-generate key value pairs. (for Chat Area and Chat Info Panel)
+
+How does the on, child-added event listener work? Firebase
