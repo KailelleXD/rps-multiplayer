@@ -45,6 +45,13 @@ This project is being created for a homework assignnment through my UCLAx coding
 #### This Document to be revised/updated as project progresses.
 
 ### Update-log:
+#### 10-07/2018 - 9:54pm
+* In-Process:
+    * Rough list of features/functions of game.
+    * Psuedo-coding all items on the above list.
+* Complete:
+    * index.html, game-screen.html (for reference)
+
 #### 10/06/2018 - 10:07am
 * In-Process:
     * game-screen.html (Working on Grid for Game Panel, and Chat Panel)
