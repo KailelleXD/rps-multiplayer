@@ -45,10 +45,17 @@ This project is being created for a homework assignnment through my UCLAx coding
 #### This Document to be revised/updated as project progresses.
 
 ### Update-log:
-#### 10-07/2018 - 9:54pm
+#### 10/08/2018 - 11:30pm
+* Complete:
+    * Rough list of features/functions of game.
+    * Variable list.
+    * Pseudo-code all functions.
+    * Layout game logic.
+
+#### 10/07/2018 - 9:54pm
 * In-Process:
     * Rough list of features/functions of game.
-    * Psuedo-coding all items on the above list.
+    * Pseudo-coding all items on the above list.
 * Complete:
     * index.html, game-screen.html (for reference)
 
