@@ -1,26 +1,26 @@
 //_____________________________________________________________________________________________
 //Is there a method to clear the values of specific key value pairs within firebase realtime database?
 
-    .remove() <-- If my understanding is correct, if I use this on a node it will remove all child elements as well?
+    // .remove() <-- If my understanding is correct, if I use this on a node it will remove all child elements as well?
 
 
 //_____________________________________________________________________________________________
 //Refresh - How to use the .css jQuery method to change the display to hidden. How do I unhide? .clear()??
 
-    .hide() and .show() will remove and then re-add an element.
-    If the above doesn't work, Then try using .css method.
+    // .hide() and .show() will remove and then re-add an element.
+    // If the above doesn't work, Then try using .css method.
 
 
 //_____________________________________________________________________________________________
 //Refresh - How to toggle/cycle between images using data-state and data-* (for different img sources) (reference the giphy-app in code-projects folder)
 
-    example:
-    <img src="assets/images/blank.jpg" 
-        data-rock="assets/images/rock.jpg" 
-        data-paper="assets/images/paper.jpg" 
-        data-scissors="assets/images/scissors.jpg" 
-        data-blank="assets/images/blank.jpg" 
-        data-state="blank" class="user-choices">
+    //  example:
+    //  <img src="assets/images/blank.jpg" 
+    //      data-rock="assets/images/rock.jpg" 
+    //      data-paper="assets/images/paper.jpg" 
+    //      data-scissors="assets/images/scissors.jpg" 
+    //      data-blank="assets/images/blank.jpg" 
+    //      data-state="blank" class="user-choices">
 
     $(document).on("click", ".user-choices", function() {
         // The attr jQuery method allows us to get or set the value of any attribute on our HTML element.
@@ -56,7 +56,7 @@
 //Firebase realtime database, how to (set, view/display data, and push) to the database to auto-generate key value pairs. (for Chat Area and Chat Info Panel)
 
 
-[SET]________________________________________
+//[SET]________________________________________
 var database = firebase.database();
 
 var name = "Stevo";
@@ -71,7 +71,7 @@ database.ref().set({
     comment: comment
 });
 
-    [VIEW/DISPLAY DATA]__________________________
+    //[VIEW/DISPLAY DATA]__________________________
     // Firebase watcher + initial loader .on("value")
     database.ref().on("value", function(snapshot) {
 
@@ -95,7 +95,7 @@ database.ref().set({
 
 
 
-[PUSH]_______________________________________
+//[PUSH]_______________________________________
 var database = firebase.database();
 
 var name = "Stevo";
@@ -111,7 +111,7 @@ database.ref().push({
     dateAdded: firebase.database.ServerValue.TIMESTAMP
 });
 
-    [VIEW/DISPLAY DATA]__________________________
+    //[VIEW/DISPLAY DATA]__________________________
     // Firebase watcher .on("child_added"
     database.ref().on("child_added", function(snapshot) {
         // storing the snapshot.val() in a variable for convenience
