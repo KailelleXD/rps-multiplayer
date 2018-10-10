@@ -216,8 +216,7 @@ function playerName() {
 function setGameScreen() {
     // Set key-value pair of startScreen to FALSE.
     database.ref().update({
-        startScreen: false,
-        gameState: true            
+        startScreen: false           
     });
     // Replaces HTML elements on DOM with HTML to build the game-screen.
     $("#screen").html(
@@ -225,6 +224,9 @@ function setGameScreen() {
 
 
     );
+    database.ref().update({
+        gameState: true            
+    });
 } /// setGameScreen();
 
 
