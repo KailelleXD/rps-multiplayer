@@ -32,18 +32,33 @@ var round = 1;
 var counter = 5;
 
     // Used to determine if the game is currently running already.
-var gameState = false;
+var gameState = 0;
 
     // Used to determine if someone is currently at the start screen or not.
 var startScreen = false;
 
 // Objects ////
 
-rpsObj = {};
+topDisplayObj = {
+    rps: "assets/images/tp-rps.jpg",
+    rock: "assets/images/tp-rock.jpg",
+    paper: "assets/images/tp-paper.jpg",
+    scissors: "assets/images/tp-scissors.jpg",
+    blank: "assets/images/tp-blank.jpg"
+};
 
-topDisplayObj = {};
+rpsObj = {
+    rock: "assets/images/rock.jpg",
+    paper: "assets/images/paper.jpg",
+    scissors: "assets/images/scissors.jpg",
+    blank: "assets/images/blank.jpg"
+};
 
-winPanelObj = {};
+winPanelObj = {
+    p1: "assets/images/wp-p1.jpg",
+    p2: "assets/images/wp-p2.jpg",
+    tieGame: "assets/images/wp-tg.jpg"
+};
 
 
 
@@ -126,7 +141,7 @@ function userAtStartScreen() {
 function checkGameState() {
     console.log("checkGameState(); function has been called");
     // IF, gameState is TRUE.. THEN, .show() #game-in-progress.
-    if (gameState === true) {
+    if (gameState === 2) {
         console.log("#game-in-session message should be showing");
         $("#game-in-session").show();
         // Change #go-btn to RED, change text to ⦸
@@ -135,7 +150,7 @@ function checkGameState() {
         $("#go-btn").addClass("bg-danger");
     }
     // IF, gameState is FALSE.. THEN, .hide() #game-in-progress.
-    if (gameState === false) {
+    if (gameState < 2) {
         console.log("#game-in-session message should be hidden");
         $("#game-in-session").hide();
         $("#go-btn").removeClass("bg-danger");
@@ -153,7 +168,7 @@ function hideStartInfo() {
 function goBtn() {
     console.log("goBtn(); function has been called");
     // Only run if game is not already in progress.
-    if (gameState === false) {
+    if (gameState < 2) {
         // .on Click event listener
         $("#go-btn").on("click", function() {
             console.log("#go-btn, has been clicked!");
@@ -193,7 +208,7 @@ function playerName() {
         // THEN, set nameHolder to value of the key-pair of player1Name.
         database.ref().update({
             player1Name: nameHolder,
-            gameState: true,            
+            gameState: 1,            
         });
         console.log("player1: " + player1);
         setGameScreen();
@@ -202,7 +217,7 @@ function playerName() {
         // THEN, set nameHolder to value of the key-pair of player2Name.
         database.ref().update({
             player2Name: nameHolder,
-            gameState: true,            
+            gameState: 2,            
         });
         console.log("player2: " + player2);
         setGameScreen();
@@ -378,9 +393,6 @@ function setGameScreen() {
             '</div>'
         
             );
-    database.ref().update({
-        gameState: true            
-    });
 } /// setGameScreen();
 
 
@@ -572,7 +584,7 @@ function consoleClickCheck() {                                             //
 // Event Listener to determine when a user has closed (unloaded the window)                          //
 // and then clear the key-value pairs that determine if a user is player 1 or 2.                     //
 window.onbeforeunload = function (e) {
-    if (gameState === false) {
+    if (gameState > 0) {
         database.ref().update({
             player1Name: "",
             player2Name: ""
@@ -582,9 +594,9 @@ window.onbeforeunload = function (e) {
 //----------------------------------------------------------------------------------------------------//
 
 window.onunload = function (e) {
-    if (gameState === true) {
+    if (gameState > 0) {
         database.ref().update({
-            gameState: false
+            gameState: 0
         });
     }
     if (startScreen === true) {
@@ -602,41 +614,3 @@ hideStartInfo();
 
 
 });  ///$(document).ready(function() {});
-
-
-    // // IF, users are playing OR at the start screen (but not BOTH), clear playerName key-pairs.
-    // if (gamestate === true && startScreen === false) {
-    //     database.ref().update({
-    //         player1Name: "",
-    //         player2Name: "",
-    //         gameState: false
-    //     });
-    // }
-    // if (gameState === false && startScreen === true) {
-    //     database.ref().update({
-    //         player1Name: "",
-    //         player2Name: "",
-    //         startScreen: false
-    //     });
-    // }
-
-
-// if (gameState === false && startScreen === true ||
-//     gamestate === true && startScreen === false) {
-        // database.ref().update({
-        //     player1Name: "",
-        //     player2Name: "",
-        // });
-//         // If user is at startScreen and they unload window, set startScreen key-pair to false.
-//         if (startScreen === true) {
-//             database.ref().update({
-//                 startScreen: false
-//             });
-//         }
-//         // If user is at startScreen and they unload window, set gameState key-pair to false.
-//         if (gameState === true) {
-            // database.ref().update({
-            //     gameState: false
-            // });
-//         }                                       
-// } 
