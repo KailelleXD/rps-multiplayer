@@ -34,6 +34,19 @@ var counter = 5;
     // Used to determine if the game is currently running already.
 var gameState = false;
 
+    // Used to determine if someone is currently at the start screen or not.
+var startScreen = false;
+
+// Objects ////
+
+rpsObj = {};
+
+topDisplayObj = {};
+
+winPanelObj = {};
+
+
+
 //___________________________________________////
 // References for Firebase Realtime Database ////
 
@@ -42,6 +55,8 @@ var gameState = false;
     // player2Name
     // player1Choice
     // player2Choice
+    // gameState
+    // startScreen
 
 // Nodes ////
     // messagesSection
@@ -65,15 +80,21 @@ var database = firebase.database();
 database.ref().on("value", function(snapshot) {
 
     // Log everything that's coming out of snapshot
-    console.log(snapshot.val());
+    // console.log(snapshot.val());
+    console.log("player1Name: " + snapshot.val().player1Name);
+    console.log("player2Name: " + snapshot.val().player2Name);
+    console.log("gameState: " + snapshot.val().gameState);
+    console.log("startScreen: " + snapshot.val().startScreen);
     player1 = snapshot.val().player1Name;
     player2 = snapshot.val().player2Name;
-
+    gameState = snapshot.val().gameState;
+    startScreen = snapshot.val().startScreen;
+    checkGameState();
+    goBtn();
     
 });
 
 //___________________________________________////
-
 
 //___________________________////
 // Function Chain References ////
@@ -93,37 +114,55 @@ database.ref().on("value", function(snapshot) {
 // Functions____________________////
 
 // Start Screen //
-// This function runs on document load and clears the database of any prior used player names.
-function clearNames() {
-    $("#start-screen-info").hide();
-    // Assigns the value, "" to the variables: nameHolder, playerName1, playerName2
-    nameHolder = "";
-    playerName1 = "";
-    playerName2 = "";
-    // IF, the gameState variable is set to FALSE.
-    if (gameState === false) {
-        // THEN, send the above variables to the database.
-        database.ref().set({
-            player1Name: "",
-            player2Name: ""
-        })
+// Starting function to set key-pair, startScreen to TRUE.
+function userAtStartScreen() {
+    database.ref().update({
+        startScreen: true
+    });
+}
 
-    // ELSE, inform the user that the game is in session and to please wait.
-    } else {
-        // Change later to target $("#start-screen-info").text("");
-        console.log("The Game is in Session, please wait...")
-    }   
+// Checks the gameState from the database and informs the user if a game is in progress.
+// AND sets startScreen key-pair to TRUE.
+function checkGameState() {
+    console.log("checkGameState(); function has been called");
+    // IF, gameState is TRUE.. THEN, .show() #game-in-progress.
+    if (gameState === true) {
+        console.log("#game-in-session message should be showing");
+        $("#game-in-session").show();
+        // Change #go-btn to RED, change text to ⦸
+        $("#go-btn").removeClass("bg-success");
+        $("#go-btn").text("⦸")
+        $("#go-btn").addClass("bg-danger");
+    }
+    // IF, gameState is FALSE.. THEN, .hide() #game-in-progress.
+    if (gameState === false) {
+        console.log("#game-in-session message should be hidden");
+        $("#game-in-session").hide();
+        $("#go-btn").removeClass("bg-danger");
+        $("#go-btn").text("GO!")
+        $("#go-btn").addClass("bg-success");
+    }
+} /// checkGameState();
+
+// Uses .hide() method to hide enter-a-name messages.
+function hideStartInfo() {
+    $("#enter-a-name").hide();  
 } /// clearNames();
 
 // Sets up click functionality, and calls the function noNameCheck();
 function goBtn() {
     console.log("goBtn(); function has been called");
-    // .on Click event listener
-    $("#go-btn").on("click", function() {
-        console.log("#go-btn, has been clicked!");
-        // When user clicks, call noNameCheck();
-        noNameCheck();
-    });
+    // Only run if game is not already in progress.
+    if (gameState === false) {
+        // .on Click event listener
+        $("#go-btn").on("click", function() {
+            console.log("#go-btn, has been clicked!");
+            // When user clicks, call noNameCheck();
+            noNameCheck();
+        });
+    } else {
+        console.log("#go-btn should not be functioning.");
+    }
 } /// goBtn();
 
 // Checks to see if a player entered a name or not.
@@ -134,10 +173,10 @@ function noNameCheck() {
     // Check if text-input field (#player-name) is blank.
     // IF, blank. THEN, inform player to, "Please enter a name."
     if (name === "") {
-        $("#start-screen-info").show();
+        $("#enter-a-name").show();
     // ELSE, place value from text input box into the variable nameHolder
     } else {
-        $("#start-screen-info").hide();
+        $("#enter-a-name").hide();
         $("#player-name").val("");
         nameHolder = name;
         console.log("nameHolder: " + nameHolder);
@@ -153,7 +192,8 @@ function playerName() {
     if (player1 === "") {
         // THEN, set nameHolder to value of the key-pair of player1Name.
         database.ref().update({
-            player1Name: nameHolder
+            player1Name: nameHolder,
+            gameState: true,            
         });
         console.log("player1: " + player1);
         setGameScreen();
@@ -161,182 +201,186 @@ function playerName() {
     } else if (player2 === "") {
         // THEN, set nameHolder to value of the key-pair of player2Name.
         database.ref().update({
-            player2Name: nameHolder
+            player2Name: nameHolder,
+            gameState: true,            
         });
         console.log("player2: " + player2);
         setGameScreen();
-    // ELSE, inform the user to: "The Game is in Session, please wait..."
+    // ELSE, inform the user to: "Game in Session, please wait..."
     } else {
-        // Change later to target $("#start-screen-info").text("");
-        console.log("The Game is in Session, please wait...");
+        $("#game-in-session").show();
     } 
 } /// playerName1();
 
 // Dynamically generates the game screen.
 function setGameScreen() {
-    // Sets the variable gameState to TRUE.
-    gameState = true;
+    // Set key-value pair of startScreen to FALSE.
+    database.ref().update({
+        startScreen: false           
+    });
     // Replaces HTML elements on DOM with HTML to build the game-screen.
     $("#screen").html(
 
-'<div class="row justify-content-center">' +
+        '<div class="row justify-content-center">' +
+                
+                '<!-- Main Column 1 -->' +
+                '<div class="content-wrapper col-4 bg-primary mx-1 p-1 rps-image">' +
+                    
+                    '<!-- Sub Row 1 (Player Name, Top Display Panel, Round Number) -->' +
+                    '<div class="row mt-1 mb-3">' +
+                        
+                        '<!-- Col 1 (Player Name) -->' +
+                        '<div class="col-4">' +
+                            '<div>' +
+                                '<p class="d-flex align-items-start justify-content-center my-0 py-0 ">Player 1:</p>' +
+                                '<p id="player-name-panel" class="d-flex align-items-start justify-content-center my-0 py-0 ">Stevo</p>' +
+                            '</div>' +
+                        '</div>' +
+                        
+                        '<!-- Col 2 (Top Display Panel)-->' +
+                        '<div id="td-panel" class="col-4 d-flex align-items-center justify-content-center">' +
+                            '<img src="assets/images/tp-rps.jpg" class="border border-dark rounded m-0">' +
+                        '</div>' +
+                        
+                        '<!-- Col 3 (Round Number)-->' +
+                        '<div class="col-4">' +
+                            '<div>' +
+                                '<p class="d-flex align-items-start justify-content-center my-0 ">Round:</p>' +
+                                '<p id="round-number" class="d-flex align-items-start justify-content-center my-0 ">1</p>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
         
-        '<!-- Main Column 1 -->' +
-        '<div class="content-wrapper col-4 bg-primary mx-1 p-1 rps-image">' +
-            
-            '<!-- Sub Row 1 (Player Name, Top Display Panel, Round Number) -->' +
-            '<div class="row mt-1 mb-3">' +
-                
-                '<!-- Col 1 (Player Name) -->' +
-                '<div class="col-4">' +
-                    '<div>' +
-                        '<p class="d-flex align-items-start justify-content-center my-0 py-0 ">Player 1:</p>' +
-                        '<p id="player-name-panel" class="d-flex align-items-start justify-content-center my-0 py-0 ">Stevo</p>' +
+                    '<!-- Sub Row 2 (Player 1 Choice, Winner Panel, Player 2 Choice) -->' +
+                    '<div class="row mb-2">' +
+                        
+                        '<!-- Col 1 (Player 1 Choice) -->' +
+                        '<div id="p1-display" class="col-4 m-0 p-0">' +
+                            '<img src="assets/images/blank.jpg" class="center-block border border-light rounded mt-1">' +
+                        '</div>' +
+                        
+                        '<!-- Col 2 (Winner Panel) -->' +
+                        '<div id="win-panel" class="col-4 m-0 p-0">' +
+                            '<img src="assets/images/wp-blank.jpg" class="center-block border border-dark rounded mt-1">' +
+                        '</div>' +
+                        
+                        '<!-- Col 3 (Player 2 Choice) -->' +
+                        '<div id="p2-display" class="col-4 m-0 p-0">' +
+                            '<img src="assets/images/blank.jpg" class="center-block border border-light rounded mt-1">' +
+                        '</div>' +
+                    '</div>' +
+        
+                    '<!-- Sub Row 3 (Decorative shape, Wins/Losses Panel, Decorative shape) -->' +
+                    '<div class="row mb-3">' +
+                        
+                        '<!-- Col 1 (Decorative shape)-->' +
+                        '<div class="col-4 m-0 p-0">' +
+                            '<div class="bg-decor-shape-left mr-3 ml-1 mt-3 py-4"></div>' +
+                        '</div>' +
+                        
+                        '<!-- Col 2 (Win/Losses Panel) -->' +
+                        '<div class="col-4 mt-3 m-0 p-0">' +
+        
+                            '<!-- Sub sub Row 1 -->' +
+                            '<div class="row panel-border-dark d-flex justify-content-center m-0">' +
+                                '<!-- Sub Col 1 -->' +
+                                '<div class="col-3 bg-dark text-light d-flex justify-content-center">0</div>' +
+                                '<!-- Sub Col 2 -->' +
+                                '<div class="col-3 bg-light d-flex justify-content-center m-0 py-0 px-4">Wins</div>' +
+                                '<!-- Sub Col 3 -->' +
+                                '<div class="col-3 bg-dark text-light d-flex justify-content-center">0</div>' +
+                            '</div>' +
+        
+                            '<!-- Sub sub Row 2 -->' +
+                            '<div class="row panel-border-dark d-flex justify-content-center m-0">' +
+                                '<!-- Sub Col 1 -->' +
+                                '<div class="col-3 bg-light d-flex justify-content-center">0</div>' +
+                                '<!-- Sub Col 2 -->' +
+                                '<div class="col-3 bg-dark text-light d-flex justify-content-center m-0 py-0 px-4">Losses</div>' +
+                                '<!-- Sub Col 3 -->' +
+                                '<div class="col-3 bg-light d-flex justify-content-center">0</div>' +
+                            '</div>' +
+        
+                        '</div>' +
+                        
+                        '<!-- Col 3 (Decorative shape) -->' +
+                        '<div class="col-4 m-0 p-0">' +
+                            '<div class="bg-decor-shape-right ml-3 mr-1 mt-3 py-4"></div>' +
+                        '</div>' +
+                    '</div>' +
+        
+                    '<!-- Sub Row 4 (Player Choices: [ROCK] [PAPER] [SCISSORS]) -->' +
+                    '<div class="row mb-2 mx-2">' +
+                        
+                        '<!-- Col 1 (Player Choice: [ROCK]) -->' +
+                        '<div class="col-4 m-0 p-0">' +
+                            '<img src="assets/images/rock.jpg" class="center-block border border-light rounded mt-1">' +
+                        '</div>' +
+                        
+                        '<!-- Col 2 (Player Choice: [PAPER])-->' +
+                        '<div class="col-4 m-0 p-0">' +
+                            '<img src="assets/images/paper.jpg" class="center-block border border-light rounded mt-1">' +
+                        '</div>' +
+                        
+                        '<!-- Col 3 (Player Choice: [SCISSORS])-->' +
+                        '<div class="col-4 m-0 p-0">' +
+                            '<img src="assets/images/scissors.jpg" class="center-block border border-light rounded mt-1">' +
+                        '</div>' +
+                    '</div>' +
+        
+                    '<!-- Sub Row 5 (Ready Button, Reset Button) -->' +
+                    '<div class="row mb-2 mx-1">' +
+                        
+                        '<!-- Col 1 (Ready Button) -->' +
+                        '<div class="col-6 bg-secondary rounded border border-dark d-flex justify-content-center">READY</div>' +
+                        
+                        '<!-- Col 2 (Reset Button) -->' +
+                        '<div class="col-6 bg-secondary rounded border border-dark d-flex justify-content-center">RESET</div>' +
+                    '</div>' +
+        
+                    
+                '</div>' +
+        
+                '<!-- Main Column 2 -->' +
+                '<div class="content-wrapper col-6 mx-1 chat-panel">' +
+        
+                    '<!-- Row 1 (Game Title) -->' +
+                    '<div class="row bg-light title-round px-3"><H1 class="pt-2">ROCK, PAPER, SCISSORS... GO!!!</H1></div>' +
+        
+                    '<!-- Row 2 (Chat Area) -->' +
+                    '<div class="row chat-area bg-primary pt-2">' +
+                        '<div id="chat-display-area">' +
+                            '<div class="mx-2">-</div>' +
+                            '<div class="mx-2">-</div>' +
+                            '<div class="mx-2">-</div>' +
+                            '<div class="mx-2">-</div>' +
+                            '<div class="mx-2">-</div>' +
+                            '<div class="mx-2">-</div>' +
+                            '<div class="mx-2">-</div>' +
+                        '</div>' +
+                    '</div>' +
+        
+                    '<!-- Row 3 (Chat Entry) -->' +
+                    '<div class="row chat-entry d-flex align-items-end">' +
+                        '<div class="input-group input-group-sm mb-3">' +
+                            '<div class="input-group-prepend">' +
+                                '<span class="input-group-text" id="inputGroup-sizing-sm">CHAT</span>' +
+                            '</div>' +
+                            '<input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">' +
+                        '</div>' +
+                    '</div>' +
+                    '<div id="game-info-panel" class="game-panel m-0 p-0">' +
+                        '<div>~ Player 1: Stevo, has joined the game.</div>' +
+                        '<div>~ Waiting for Player 2...</div>' +
                     '</div>' +
                 '</div>' +
-                
-                '<!-- Col 2 (Top Display Panel)-->' +
-                '<div class="col-4 d-flex align-items-center justify-content-center">' +
-                    '<h3 class="d-flex align-items-start justify-content-center bg-light border border-dark rounded m-0 px-3">SCISSORS</h3>' +
-                '</div>' +
-                
-                '<!-- Col 3 (Round Number)-->' +
-                '<div class="col-4">' +
-                    '<div>' +
-                        '<p class="d-flex align-items-start justify-content-center my-0 ">Round:</p>' +
-                        '<p id="round-number" class="d-flex align-items-start justify-content-center my-0 ">1</p>' +
-                    '</div>' +
-                '</div>' +
-            '</div>' +
-
-            '<!-- Sub Row 2 (Player 1 Choice, Winner Panel, Player 2 Choice) -->' +
-            '<div class="row mb-2">' +
-                
-                '<!-- Col 1 (Player 1 Choice) -->' +
-                '<div class="col-4 m-0 p-0">' +
-                    '<img src="assets/images/scissors.jpg" id="p1Img" class="center-block border border-light rounded mt-1">' +
-                '</div>' +
-                
-                '<!-- Col 2 (Winner Panel) -->' +
-                '<div class="col-4 mt-1 m-0 p-0">' +
-                    '<div class="text-center bg-light border border-dark rounded py-2"><h4>Player 1<br>Wins!</h4>' +
-                    '</div>' +
-                '</div>' +
-                
-                '<!-- Col 3 (Player 2 Choice) -->' +
-                '<div class="col-4 m-0 p-0">' +
-                    '<img src="assets/images/paper.jpg" id="p2Img" class="center-block border border-light rounded mt-1">' +
-                '</div>' +
-            '</div>' +
-
-            '<!-- Sub Row 3 (Decorative shape, Wins/Losses Panel, Decorative shape) -->' +
-            '<div class="row mb-3">' +
-                
-                '<!-- Col 1 (Decorative shape)-->' +
-                '<div class="col-4 m-0 p-0">' +
-                    '<div class="bg-decor-shape-left mr-3 ml-1 mt-3 py-4"></div>' +
-                '</div>' +
-                
-                '<!-- Col 2 (Win/Losses Panel) -->' +
-                '<div class="col-4 mt-3 m-0 p-0">' +
-
-                    '<!-- Sub sub Row 1 -->' +
-                    '<div class="row panel-border-dark d-flex justify-content-center m-0">' +
-                        '<!-- Sub Col 1 -->' +
-                        '<div class="col-3 bg-dark text-light d-flex justify-content-center">0</div>' +
-                        '<!-- Sub Col 2 -->' +
-                        '<div class="col-3 bg-light d-flex justify-content-center m-0 py-0 px-4">Wins</div>' +
-                        '<!-- Sub Col 3 -->' +
-                        '<div class="col-3 bg-dark text-light d-flex justify-content-center">0</div>' +
-                    '</div>' +
-
-                    '<!-- Sub sub Row 2 -->' +
-                    '<div class="row panel-border-dark d-flex justify-content-center m-0">' +
-                        '<!-- Sub Col 1 -->' +
-                        '<div class="col-3 bg-light d-flex justify-content-center">0</div>' +
-                        '<!-- Sub Col 2 -->' +
-                        '<div class="col-3 bg-dark text-light d-flex justify-content-center m-0 py-0 px-4">Losses</div>' +
-                        '<!-- Sub Col 3 -->' +
-                        '<div class="col-3 bg-light d-flex justify-content-center">0</div>' +
-                    '</div>' +
-
-                '</div>' +
-                
-                '<!-- Col 3 (Decorative shape) -->' +
-                '<div class="col-4 m-0 p-0">' +
-                    '<div class="bg-decor-shape-right ml-3 mr-1 mt-3 py-4"></div>' +
-                '</div>' +
-            '</div>' +
-
-            '<!-- Sub Row 4 (Player Choices: [ROCK] [PAPER] [SCISSORS]) -->' +
-            '<div class="row mb-2 mx-2">' +
-                
-                '<!-- Col 1 (Player Choice: [ROCK]) -->' +
-                '<div class="col-4 m-0 p-0">' +
-                    '<img src="assets/images/rock.jpg" class="center-block border border-light rounded mt-1">' +
-                '</div>' +
-                
-                '<!-- Col 2 (Player Choice: [PAPER])-->' +
-                '<div class="col-4 m-0 p-0">' +
-                    '<img src="assets/images/paper.jpg" class="center-block border border-light rounded mt-1">' +
-                '</div>' +
-                
-                '<!-- Col 3 (Player Choice: [SCISSORS])-->' +
-                '<div class="col-4 m-0 p-0">' +
-                    '<img src="assets/images/scissors.jpg" class="center-block border border-light rounded mt-1">' +
-                '</div>' +
-            '</div>' +
-
-            '<!-- Sub Row 5 (Ready Button, Reset Button) -->' +
-            '<div class="row mb-2 mx-1">' +
-                
-                '<!-- Col 1 (Ready Button) -->' +
-                '<div class="col-6 bg-secondary rounded border border-dark d-flex justify-content-center">READY</div>' +
-                
-                '<!-- Col 2 (Reset Button) -->' +
-                '<div class="col-6 bg-secondary rounded border border-dark d-flex justify-content-center">RESET</div>' +
-            '</div>' +
-
-            
-        '</div>' +
-
-        '<!-- Main Column 2 -->' +
-        '<div class="content-wrapper col-6 mx-1 chat-panel">' +
-
-            '<!-- Row 1 (Game Title) -->' +
-            '<div class="row bg-light title-round px-3"><H1 class="pt-2">ROCK, PAPER, SCISSORS... GO!!!</H1></div>' +
-
-            '<!-- Row 2 (Chat Area) -->' +
-            '<div class="row chat-area bg-primary pt-2">' +
-                '<div id="chat-display-area">' +
-                    '<div class="mx-2">-</div>' +
-                    '<div class="mx-2">-</div>' +
-                    '<div class="mx-2">-</div>' +
-                    '<div class="mx-2">-</div>' +
-                    '<div class="mx-2">-</div>' +
-                    '<div class="mx-2">-</div>' +
-                    '<div class="mx-2">-</div>' +
-                '</div>' +
-            '</div>' +
-
-            '<!-- Row 3 (Chat Entry) -->' +
-            '<div class="row chat-entry d-flex align-items-end">' +
-                '<div class="input-group input-group-sm mb-3">' +
-                    '<div class="input-group-prepend">' +
-                        '<span class="input-group-text" id="inputGroup-sizing-sm">CHAT</span>' +
-                    '</div>' +
-                    '<input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">' +
-                '</div>' +
-            '</div>' +
-            '<div id="game-info-panel" class="game-panel m-0 p-0">' +
-                '<div>~ Player 1: Stevo, has joined the game.</div>' +
-                '<div>~ Waiting for Player 2...</div>' +
-            '</div>' +
-        '</div>' +
-
-    '</div>'
-
-    );
+        
+            '</div>'
+        
+            );
+    database.ref().update({
+        gameState: true            
+    });
 } /// setGameScreen();
 
 
@@ -508,25 +552,91 @@ function displayGameInfo() {
 
 //______________________________////
 
-//------------------------------------------------------------------------//
-//Diagnostic-tools                                                        //
-function consoleClickCheck() {                                            //
+//-----------------------------------------------------------------=-------//
+//Diagnostic-tools                                                         //
+function consoleClickCheck() {                                             //
     $(document).on("click", function() {
         console.log("Diagnostic-tool----------");
         
         console.log("-------------------------");   
     });
 } ///function to console.log on each click.                                //
-// consoleClickCheck(); // Comment-in this line to use the above function.//
-//------------------------------------------------------------------------//
+// consoleClickCheck(); // Comment-in this line to use the above function. //
+//-----------------------------------------------------=-------------------//
 
 ////Diagnostic-tool////
 // consoleClickCheck();
 ///////////////////////
 
+//---------------------------------------------------------------------------------------------------//
+// Event Listener to determine when a user has closed (unloaded the window)                          //
+// and then clear the key-value pairs that determine if a user is player 1 or 2.                     //
+window.onbeforeunload = function (e) {
+    if (gameState === false) {
+        database.ref().update({
+            player1Name: "",
+            player2Name: ""
+        });
+    }
+} 
+//----------------------------------------------------------------------------------------------------//
+
+window.onunload = function (e) {
+    if (gameState === true) {
+        database.ref().update({
+            gameState: false
+        });
+    }
+    if (startScreen === true) {
+        database.ref().update({
+            startScreen: false
+        });
+    }
+}
+
 // Main Game Code ////
-clearNames();
-goBtn();
+userAtStartScreen();
+hideStartInfo();
+
+
 
 
 });  ///$(document).ready(function() {});
+
+
+    // // IF, users are playing OR at the start screen (but not BOTH), clear playerName key-pairs.
+    // if (gamestate === true && startScreen === false) {
+    //     database.ref().update({
+    //         player1Name: "",
+    //         player2Name: "",
+    //         gameState: false
+    //     });
+    // }
+    // if (gameState === false && startScreen === true) {
+    //     database.ref().update({
+    //         player1Name: "",
+    //         player2Name: "",
+    //         startScreen: false
+    //     });
+    // }
+
+
+// if (gameState === false && startScreen === true ||
+//     gamestate === true && startScreen === false) {
+        // database.ref().update({
+        //     player1Name: "",
+        //     player2Name: "",
+        // });
+//         // If user is at startScreen and they unload window, set startScreen key-pair to false.
+//         if (startScreen === true) {
+//             database.ref().update({
+//                 startScreen: false
+//             });
+//         }
+//         // If user is at startScreen and they unload window, set gameState key-pair to false.
+//         if (gameState === true) {
+            // database.ref().update({
+            //     gameState: false
+            // });
+//         }                                       
+// } 
