@@ -6,6 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>ROCK, PAPER, SCISSORS, GO!!!</title>
 
+    <!-- Firebase Link -->
+    <script src="https://www.gstatic.com/firebasejs/5.5.3/firebase.js"></script>
+
     <!-- Bootstrap Link -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
@@ -19,9 +22,12 @@
     <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"> 
     </script>
+
+    <!-- Javascript Link -->
+    <script src="assets/javascript/game.js"></script>
     
 </head>
-<body>
+<body id="screen">
 
     <div class="container bg-primary m-4 py-4 border-round">
         <div class="float-left ml-3 mr-4">
@@ -47,10 +53,10 @@
                     <label for="player-name" class="mb-0">Player Name:</label><br>
                     <input type="text" id="player-name">
                 </div>
-                <div id="start-screen-info" class="col-6">&lt;-- Please enter a name. </div>
                 <div class="col-2">
-                    <button class="float-right btn btn-success mt-3">GO!</button>
+                    <button id="go-btn" class="btn btn-success mt-3">GO!</button>
                 </div>
+                <div id="start-screen-info" class="col-6">[ Please enter a name ]</div>
 
 
 
@@ -64,6 +70,5 @@
     </div>
 
 
-    
 </body>
 </html>

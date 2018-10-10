@@ -1,17 +1,21 @@
+$(document).ready(function() {
+
+
 // Variables / Arrays ////
 
     // Player name info / Helps to determine if Player 1 or 2.
 var nameHolder = "";
-var playerName1 = "";
-var playerName2 = "";
+var player1 = "";
+var player2 = "";
 
     // Variables that determine what to do based on if a user is Player 1 or 2.
 var whichPlayerAmI = ""; // "Player 1" or "Player 2"
 var playerToCheck = ""; // "p1" or "p2"
 
     // Locally stored variable for either player 1 or 2's choice of Rock, Paper, or Scissors.
-var p1Choice = "";
-var p2Choice = "";
+var userChoice = "blank";
+var p1Choice = ""; //
+var p2Choice = ""; // might not need these.
 
     // Variables to send message and game info strings to the firebase realtime database.
 var message = "";
@@ -23,8 +27,9 @@ var p2Wins = 0;
 var p1Losses = 0;
 var p2Losses = 0;
 
-    // Round Counter.
+    // Round and Interval Counter.
 var round = 1;
+var counter = 5;
 
     // Used to determine if the game is currently running already.
 var gameState = false;
@@ -33,14 +38,39 @@ var gameState = false;
 // References for Firebase Realtime Database ////
 
 // keys ////
-    // player1
-    // player2
+    // player1Name
+    // player2Name
     // player1Choice
     // player2Choice
 
 // Nodes ////
     // messagesSection
     // gameInfoSection
+
+// Initialize Firebase
+var config = {
+    apiKey: "AIzaSyABfK6-CepsF2wIKZfTFMa4xyJAZ3qRzuA",
+    authDomain: "rps-go-16974.firebaseapp.com",
+    databaseURL: "https://rps-go-16974.firebaseio.com",
+    projectId: "rps-go-16974",
+    storageBucket: "rps-go-16974.appspot.com",
+    messagingSenderId: "741923666379"
+  };
+  firebase.initializeApp(config);
+
+// Create a variable to reference the database
+var database = firebase.database();
+
+// Firebase watcher + initial loader HINT: .on("value")
+database.ref().on("value", function(snapshot) {
+
+    // Log everything that's coming out of snapshot
+    console.log(snapshot.val());
+    player1 = snapshot.val().player1Name;
+    player2 = snapshot.val().player2Name;
+
+    
+});
 
 //___________________________________________////
 
@@ -60,85 +90,259 @@ var gameState = false;
 //___________________________////
 
 
-//_____________________////
-// Function Names List ////
-
-// Start Screen //
-    // clearNames();
-    // goBtn();
-    // noNameCheck();
-    // playerName1();
-    // setGameScreen();
-
-// Game Area //
-    // readyBtn();
-    // gameStart();
-    // choiceClicks();
-    // topPanelStart();
-    // playerDefaultCheck();
-    // winLossState();
-    // player1Wins();
-    // player2Wins();
-    // tieGame();
-    // nextRound();
-    // resetBtn();
-    // resetGame();
-    // whichPlayerToCheck(pChk);
-    // showPlayerName(pToChk);
-    // playerDisplay();
-
-// Chat Area //
-    // chatBtn();
-    // chatAreaDisplay();
-    // displayGameInfo();
-
-//_____________________////
-
-
 // Functions____________________////
 
 // Start Screen //
 // This function runs on document load and clears the database of any prior used player names.
-clearNames() {
+function clearNames() {
+    $("#start-screen-info").hide();
     // Assigns the value, "" to the variables: nameHolder, playerName1, playerName2
+    nameHolder = "";
+    playerName1 = "";
+    playerName2 = "";
     // IF, the gameState variable is set to FALSE.
+    if (gameState === false) {
         // THEN, send the above variables to the database.
+        database.ref().set({
+            player1Name: "",
+            player2Name: ""
+        })
+
     // ELSE, inform the user that the game is in session and to please wait.
+    } else {
+        // Change later to target $("#start-screen-info").text("");
+        console.log("The Game is in Session, please wait...")
+    }   
 } /// clearNames();
 
 // Sets up click functionality, and calls the function noNameCheck();
-goBtn() {
+function goBtn() {
+    console.log("goBtn(); function has been called");
     // .on Click event listener
-    // When user clicks, call noNameCheck();
+    $("#go-btn").on("click", function() {
+        console.log("#go-btn, has been clicked!");
+        // When user clicks, call noNameCheck();
+        noNameCheck();
+    });
 } /// goBtn();
 
 // Checks to see if a player entered a name or not.
-noNameCheck() {
-    // Check if text-input field is blank.
+function noNameCheck() {
+    console.log("noNameCheck(); function has been called");
+    let name = $("#player-name").val();
+    console.log("The value of name is: " + name);
+    // Check if text-input field (#player-name) is blank.
     // IF, blank. THEN, inform player to, "Please enter a name."
+    if (name === "") {
+        $("#start-screen-info").show();
     // ELSE, place value from text input box into the variable nameHolder
+    } else {
+        $("#start-screen-info").hide();
+        $("#player-name").val("");
+        nameHolder = name;
+        console.log("nameHolder: " + nameHolder);
+        playerName();
+    } 
 } /// noNameCheck();
 
 // Checks the database to find out if the user is player 1 or player 2 or IF the game is already in progress.
-playerName1() {
+function playerName() {
+    console.log("playerName(); function has been called");
+    console.log("player1: " + player1 + " / " + "player2: " + player2);
     // IF, playerName1 key-value is "" (empty).
-    // THEN, playerName1 = nameHolder
+    if (player1 === "") {
+        // THEN, set nameHolder to value of the key-pair of player1Name.
+        database.ref().update({
+            player1Name: nameHolder
+        });
+        console.log("player1: " + player1);
+        setGameScreen();
     // ELSE IF, playerName2 key-value is "" (empty).
-    // THEN, playerName2 = nameHolder
-    // ELSE, inform the user to, "Please wait. Game in Progress."
+    } else if (player2 === "") {
+        // THEN, set nameHolder to value of the key-pair of player2Name.
+        database.ref().update({
+            player2Name: nameHolder
+        });
+        console.log("player2: " + player2);
+        setGameScreen();
+    // ELSE, inform the user to: "The Game is in Session, please wait..."
+    } else {
+        // Change later to target $("#start-screen-info").text("");
+        console.log("The Game is in Session, please wait...");
+    } 
 } /// playerName1();
 
 // Dynamically generates the game screen.
-setGameScreen() {
+function setGameScreen() {
     // Sets the variable gameState to TRUE.
+    gameState = true;
     // Replaces HTML elements on DOM with HTML to build the game-screen.
-        // Add ID="screen" to the <body> tag on index.html?
+    $("#screen").html(
+
+'<div class="row justify-content-center">' +
+        
+        '<!-- Main Column 1 -->' +
+        '<div class="content-wrapper col-4 bg-primary mx-1 p-1 rps-image">' +
+            
+            '<!-- Sub Row 1 (Player Name, Top Display Panel, Round Number) -->' +
+            '<div class="row mt-1 mb-3">' +
+                
+                '<!-- Col 1 (Player Name) -->' +
+                '<div class="col-4">' +
+                    '<div>' +
+                        '<p class="d-flex align-items-start justify-content-center my-0 py-0 ">Player 1:</p>' +
+                        '<p id="player-name-panel" class="d-flex align-items-start justify-content-center my-0 py-0 ">Stevo</p>' +
+                    '</div>' +
+                '</div>' +
+                
+                '<!-- Col 2 (Top Display Panel)-->' +
+                '<div class="col-4 d-flex align-items-center justify-content-center">' +
+                    '<h3 class="d-flex align-items-start justify-content-center bg-light border border-dark rounded m-0 px-3">SCISSORS</h3>' +
+                '</div>' +
+                
+                '<!-- Col 3 (Round Number)-->' +
+                '<div class="col-4">' +
+                    '<div>' +
+                        '<p class="d-flex align-items-start justify-content-center my-0 ">Round:</p>' +
+                        '<p id="round-number" class="d-flex align-items-start justify-content-center my-0 ">1</p>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+
+            '<!-- Sub Row 2 (Player 1 Choice, Winner Panel, Player 2 Choice) -->' +
+            '<div class="row mb-2">' +
+                
+                '<!-- Col 1 (Player 1 Choice) -->' +
+                '<div class="col-4 m-0 p-0">' +
+                    '<img src="assets/images/scissors.jpg" id="p1Img" class="center-block border border-light rounded mt-1">' +
+                '</div>' +
+                
+                '<!-- Col 2 (Winner Panel) -->' +
+                '<div class="col-4 mt-1 m-0 p-0">' +
+                    '<div class="text-center bg-light border border-dark rounded py-2"><h4>Player 1<br>Wins!</h4>' +
+                    '</div>' +
+                '</div>' +
+                
+                '<!-- Col 3 (Player 2 Choice) -->' +
+                '<div class="col-4 m-0 p-0">' +
+                    '<img src="assets/images/paper.jpg" id="p2Img" class="center-block border border-light rounded mt-1">' +
+                '</div>' +
+            '</div>' +
+
+            '<!-- Sub Row 3 (Decorative shape, Wins/Losses Panel, Decorative shape) -->' +
+            '<div class="row mb-3">' +
+                
+                '<!-- Col 1 (Decorative shape)-->' +
+                '<div class="col-4 m-0 p-0">' +
+                    '<div class="bg-decor-shape-left mr-3 ml-1 mt-3 py-4"></div>' +
+                '</div>' +
+                
+                '<!-- Col 2 (Win/Losses Panel) -->' +
+                '<div class="col-4 mt-3 m-0 p-0">' +
+
+                    '<!-- Sub sub Row 1 -->' +
+                    '<div class="row panel-border-dark d-flex justify-content-center m-0">' +
+                        '<!-- Sub Col 1 -->' +
+                        '<div class="col-3 bg-dark text-light d-flex justify-content-center">0</div>' +
+                        '<!-- Sub Col 2 -->' +
+                        '<div class="col-3 bg-light d-flex justify-content-center m-0 py-0 px-4">Wins</div>' +
+                        '<!-- Sub Col 3 -->' +
+                        '<div class="col-3 bg-dark text-light d-flex justify-content-center">0</div>' +
+                    '</div>' +
+
+                    '<!-- Sub sub Row 2 -->' +
+                    '<div class="row panel-border-dark d-flex justify-content-center m-0">' +
+                        '<!-- Sub Col 1 -->' +
+                        '<div class="col-3 bg-light d-flex justify-content-center">0</div>' +
+                        '<!-- Sub Col 2 -->' +
+                        '<div class="col-3 bg-dark text-light d-flex justify-content-center m-0 py-0 px-4">Losses</div>' +
+                        '<!-- Sub Col 3 -->' +
+                        '<div class="col-3 bg-light d-flex justify-content-center">0</div>' +
+                    '</div>' +
+
+                '</div>' +
+                
+                '<!-- Col 3 (Decorative shape) -->' +
+                '<div class="col-4 m-0 p-0">' +
+                    '<div class="bg-decor-shape-right ml-3 mr-1 mt-3 py-4"></div>' +
+                '</div>' +
+            '</div>' +
+
+            '<!-- Sub Row 4 (Player Choices: [ROCK] [PAPER] [SCISSORS]) -->' +
+            '<div class="row mb-2 mx-2">' +
+                
+                '<!-- Col 1 (Player Choice: [ROCK]) -->' +
+                '<div class="col-4 m-0 p-0">' +
+                    '<img src="assets/images/rock.jpg" class="center-block border border-light rounded mt-1">' +
+                '</div>' +
+                
+                '<!-- Col 2 (Player Choice: [PAPER])-->' +
+                '<div class="col-4 m-0 p-0">' +
+                    '<img src="assets/images/paper.jpg" class="center-block border border-light rounded mt-1">' +
+                '</div>' +
+                
+                '<!-- Col 3 (Player Choice: [SCISSORS])-->' +
+                '<div class="col-4 m-0 p-0">' +
+                    '<img src="assets/images/scissors.jpg" class="center-block border border-light rounded mt-1">' +
+                '</div>' +
+            '</div>' +
+
+            '<!-- Sub Row 5 (Ready Button, Reset Button) -->' +
+            '<div class="row mb-2 mx-1">' +
+                
+                '<!-- Col 1 (Ready Button) -->' +
+                '<div class="col-6 bg-secondary rounded border border-dark d-flex justify-content-center">READY</div>' +
+                
+                '<!-- Col 2 (Reset Button) -->' +
+                '<div class="col-6 bg-secondary rounded border border-dark d-flex justify-content-center">RESET</div>' +
+            '</div>' +
+
+            
+        '</div>' +
+
+        '<!-- Main Column 2 -->' +
+        '<div class="content-wrapper col-6 mx-1 chat-panel">' +
+
+            '<!-- Row 1 (Game Title) -->' +
+            '<div class="row bg-light title-round px-3"><H1 class="pt-2">ROCK, PAPER, SCISSORS... GO!!!</H1></div>' +
+
+            '<!-- Row 2 (Chat Area) -->' +
+            '<div class="row chat-area bg-primary pt-2">' +
+                '<div id="chat-display-area">' +
+                    '<div class="mx-2">-</div>' +
+                    '<div class="mx-2">-</div>' +
+                    '<div class="mx-2">-</div>' +
+                    '<div class="mx-2">-</div>' +
+                    '<div class="mx-2">-</div>' +
+                    '<div class="mx-2">-</div>' +
+                    '<div class="mx-2">-</div>' +
+                '</div>' +
+            '</div>' +
+
+            '<!-- Row 3 (Chat Entry) -->' +
+            '<div class="row chat-entry d-flex align-items-end">' +
+                '<div class="input-group input-group-sm mb-3">' +
+                    '<div class="input-group-prepend">' +
+                        '<span class="input-group-text" id="inputGroup-sizing-sm">CHAT</span>' +
+                    '</div>' +
+                    '<input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">' +
+                '</div>' +
+            '</div>' +
+            '<div id="game-info-panel" class="game-panel m-0 p-0">' +
+                '<div>~ Player 1: Stevo, has joined the game.</div>' +
+                '<div>~ Waiting for Player 2...</div>' +
+            '</div>' +
+        '</div>' +
+
+    '</div>'
+
+    );
 } /// setGameScreen();
 
 
 // Game Area //
 // Sets up click functionality, checks the btn data-state: off, partial, full. (refer to research-list.js)
-readyBtn() {
+function readyBtn() {
     // On user click:
     // Check [Data-State] attribute for a value of: off, partial, or full.
     // IF, value === "off". THEN, set value to: partial.
@@ -151,13 +355,13 @@ readyBtn() {
 } /// readyBtn();
 
 // Calls the necessary functions to start each round.
-gameStart() {
+function gameStart() {
     // Call topPanelStart();
     // Call choiceClicks();
 } /// gameStart();
 
 // Sets up click functionality, for each <img> and stores both player's choices.
-choiceClicks() {
+function choiceClicks() {
     // On user click:
     // Assign the value found in [data-value] attriute to the variable: userChoice.
     // IF, the variable: whichPlayerAmI === "p1"
@@ -167,7 +371,7 @@ choiceClicks() {
 } /// choiceClicks();
 
 // Starts a countdown to display: ROCK, PAPER, SCISSORS, GO! in the Top Panel Display.
-topPanelStart() {
+function topPanelStart() {
     // Start a 5 sec. countdown.
     // @ "4", display: "ROCK" in Top Panel Display   
     // @ "3", display: "PAPER"
@@ -177,7 +381,7 @@ topPanelStart() {
 } /// topPanelStart();
 
 // Checks to determine if player made a choice within the alotted 1 sec. time frame.
-playerDefaultCheck() {
+function playerDefaultCheck() {
     // IF, userChoice === "blank"
     // THEN, in Game Info Panel, display the variable: whichPlayerAmI + "failed to make a choice in time!" (database)
         // call winLossState();
@@ -185,7 +389,7 @@ playerDefaultCheck() {
 } /// playerDefaultCheck();
 
 // Determines who won/lost and calls the appropriate function.
-winLossState() {
+function winLossState() {
     // IF, p1Choice === "rock" && p2Choice === "scissors" ||
         // p1Choice === "paper" && p2Choice === "rock" ||
         // p1Choice === "scissors" && p2Choice === "paper" ||
@@ -200,27 +404,27 @@ winLossState() {
 } /// winLossState();
 
 // Increments the variables that apply to a player 1 win.
-player1Wins() {
+function player1Wins() {
     // Increment: p1Wins, p2Losses.
     // In Win Panel, display msg: "Player 1 Wins!"
     // call nextRound();
 } /// player1Wins();
 
 // Increments the variables that apply to a player 2 win.
-player2Wins() {
+function player2Wins() {
 // Increment: p2Wins, p1Losses.
     // In Win Panel, display msg: "Player 2 Wins!"
     // call nextRound();
 } /// player2Wins();
 
 // When game is tied, display a msg in Win Panel.
-tieGame() {
+function tieGame() {
     // In Win Panel, Display msg: "It's a Tie!"
     // Call nextRound();
 } /// tieGame();
 
 // Waits for 3 secs, then increments the round, clears the Win Panel, display a game info message and calls readyBtn();
-nextRound() {
+function nextRound() {
     // Starts a 3 sec. countdown.
     // @ "0":
         // Increment: round.
@@ -230,7 +434,7 @@ nextRound() {
 } /// nextRound();
 
 // Sets up click functionality, checks the btn data-state: off, partial, full. (refer to research-list.js)
-resetBtn() {
+function resetBtn() {
     // On user click:
     // Check [Data-State] attribute for a value of: off, partial, or full.
     // IF, value === "off". THEN, set value to: partial.
@@ -244,7 +448,7 @@ resetBtn() {
 } /// readyBtn();    
 
 // Clears the required variables on browser/database to reset the game.
-resetGame() {
+function resetGame() {
     // Set variables: p1Wins, p1Losses, p2Wins, p2Losses to a value of 0.
     // Set variable: round to a value of 1.
     // Set readyBtn [data-state] attribute to: off.
@@ -256,13 +460,13 @@ resetGame() {
 } /// resetGame();
 
 // Takes in the argument (pChk) and returns a value of: "p1" or "p2", depending on if (pChk) is equal to: "Player 1" or "Player 2"
-whichPlayerToCheck(pChk) {
+function whichPlayerToCheck(pChk) {
     // IF, (pChk) === "Player 1"
     // THEN return "p1". ELSE, return "p2"
 } /// playerToCheck = whichPlayerToCheck(whichPlayerAmI);
 
 // Checks to see if user is Player 1 or 2, then displays the correct name from the database.
-showPlayerName(pToChk) {
+function showPlayerName(pToChk) {
     // IF, (pToChk) === "p1"
     // THEN, get Player 1 value from the (database)
         // $("#player-name").text(THE VALUE OF PLAYER 1 KEY)
@@ -271,7 +475,7 @@ showPlayerName(pToChk) {
 } /// showPlayerName(playerToCheck);
 
 // Checks the user's choice and displays that choice in either the Player 1 or 2 Display Panel.
-playerDisplay() {
+function playerDisplay() {
     // IF, whichPlayerAmI === "Player 1"
     // THEN, using the variable userChoice as a reference, toggle (using a switch statement)
         // the <img> using [data-type] to grab the src from [data-rock],[data-paper],[data-scissors], or [data-blank]; while targeting #player-display1
@@ -281,21 +485,21 @@ playerDisplay() {
 
 // Chat Area //
 // Sets up click functionality, takes text info from text-box and stores it in the proper location in the database.
-chatBtn() {
+function chatBtn() {
     // On user click:
     // Assign the value of the text-box into the variable: message.
     // Use PUSH to store the message in the messagesSection part of the (database)
 } /// chatBtn();
 
 // Checks the database when (child is added) and refreshes the Chat Area Display.
-chatAreaDisplay() {
+function chatAreaDisplay() {
     // Anytime a msg string is added to messagesSection in the (database),
     // the Chat Area will update to display the strings (key-values),
     // in sequential order, in the chat area.
 } /// chatAreaDisplay();
 
 // Checks the database when (child is added) and refreshes the Game Info Display.
-displayGameInfo() {
+function displayGameInfo() {
     // Anytime a gameInfo string is added to the gameInfoSection in the (database),
     // the game info panel will update to display the strings (key-values),
     // in sequential order, in the game info panel. 
@@ -303,3 +507,26 @@ displayGameInfo() {
 
 
 //______________________________////
+
+//------------------------------------------------------------------------//
+//Diagnostic-tools                                                        //
+function consoleClickCheck() {                                            //
+    $(document).on("click", function() {
+        console.log("Diagnostic-tool----------");
+        
+        console.log("-------------------------");   
+    });
+} ///function to console.log on each click.                                //
+// consoleClickCheck(); // Comment-in this line to use the above function.//
+//------------------------------------------------------------------------//
+
+////Diagnostic-tool////
+// consoleClickCheck();
+///////////////////////
+
+// Main Game Code ////
+clearNames();
+goBtn();
+
+
+});  ///$(document).ready(function() {});
