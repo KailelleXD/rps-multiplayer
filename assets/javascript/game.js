@@ -155,6 +155,7 @@ function playerName() {
         database.ref().update({
             player1Name: nameHolder
         });
+        console.log("player1: " + player1);
         setGameScreen();
     // ELSE IF, playerName2 key-value is "" (empty).
     } else if (player2 === "") {
@@ -162,6 +163,7 @@ function playerName() {
         database.ref().update({
             player2Name: nameHolder
         });
+        console.log("player2: " + player2);
         setGameScreen();
     // ELSE, inform the user to: "The Game is in Session, please wait..."
     } else {
