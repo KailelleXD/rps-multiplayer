@@ -379,7 +379,7 @@ function setGameScreen() {
                     '<div class="row chat-entry d-flex align-items-end">' +
                         '<div class="input-group input-group-sm mb-3">' +
                             '<div class="input-group-prepend">' +
-                                '<span class="input-group-text" id="inputGroup-sizing-sm">CHAT</span>' +
+                                '<span class="input-group-text" id="chat-btn inputGroup-sizing-sm">CHAT</span>' +
                             '</div>' +
                             '<input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">' +
                         '</div>' +
@@ -393,6 +393,7 @@ function setGameScreen() {
             '</div>'
         
             );
+            chatBtn();
 } /// setGameScreen();
 
 
@@ -543,8 +544,11 @@ function playerDisplay() {
 // Sets up click functionality, takes text info from text-box and stores it in the proper location in the database.
 function chatBtn() {
     // On user click:
-    // Assign the value of the text-box into the variable: message.
-    // Use PUSH to store the message in the messagesSection part of the (database)
+    $("#chat-btn").on("click", function() {
+        console.log("#chat-btn, has been clicked!");
+        // Assign the value of the text-box into the variable: message.
+        // Use PUSH to store the message in the messagesSection part of the (database)
+    });
 } /// chatBtn();
 
 // Checks the database when (child is added) and refreshes the Chat Area Display.
