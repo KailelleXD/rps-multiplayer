@@ -37,6 +37,16 @@ var gameState = false;
     // Used to determine if someone is currently at the start screen or not.
 var startScreen = false;
 
+// Objects ////
+
+rpsObj = {};
+
+topDisplayObj = {};
+
+winPanelObj = {};
+
+
+
 //___________________________________________////
 // References for Firebase Realtime Database ////
 
@@ -229,8 +239,8 @@ function setGameScreen() {
                 '</div>' +
                 
                 '<!-- Col 2 (Top Display Panel)-->' +
-                '<div class="col-4 d-flex align-items-center justify-content-center">' +
-                    '<h3 class="d-flex align-items-start justify-content-center bg-light border border-dark rounded m-0 px-3">SCISSORS</h3>' +
+                '<div id="td-panel" class="col-4 d-flex align-items-center justify-content-center">' +
+                    '<img src="assets/images/tp-go.jpg" class="border border-dark rounded m-0">' +
                 '</div>' +
                 
                 '<!-- Col 3 (Round Number)-->' +
@@ -246,19 +256,19 @@ function setGameScreen() {
             '<div class="row mb-2">' +
                 
                 '<!-- Col 1 (Player 1 Choice) -->' +
-                '<div class="col-4 m-0 p-0">' +
-                    '<img src="assets/images/scissors.jpg" id="p1Img" class="center-block border border-light rounded mt-1">' +
+                '<div id="p1-display" class="col-4 m-0 p-0">' +
+                    '<img src="assets/images/blank.jpg" id="p1Img" class="center-block border border-light rounded mt-1">' +
                 '</div>' +
                 
                 '<!-- Col 2 (Winner Panel) -->' +
-                '<div class="col-4 mt-1 m-0 p-0">' +
-                    '<div class="text-center bg-light border border-dark rounded py-2"><h4>Player 1<br>Wins!</h4>' +
+                '<div id="win-panel" class="col-4 m-0 p-0">' +
+                    '<img src="assets/images/wp-blank.jpg" class="center-block border border-dark rounded mt-1">' +
                     '</div>' +
                 '</div>' +
                 
                 '<!-- Col 3 (Player 2 Choice) -->' +
-                '<div class="col-4 m-0 p-0">' +
-                    '<img src="assets/images/paper.jpg" id="p2Img" class="center-block border border-light rounded mt-1">' +
+                '<div id="p2-display" class="col-4 m-0 p-0">' +
+                    '<img src="assets/images/blank.jpg" class="center-block border border-light rounded mt-1">' +
                 '</div>' +
             '</div>' +
 
