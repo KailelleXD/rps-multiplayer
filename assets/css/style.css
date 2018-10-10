@@ -89,9 +89,10 @@ ul {
     border-width: thin;
 }
 
-#start-screen-info {
+.start-info-style {
     color: darkred;
     font-family: 'Courier New', Courier, monospace;
+    font-size: 95%;
 }
 
 .game-panel {

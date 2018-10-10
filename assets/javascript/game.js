@@ -34,6 +34,9 @@ var counter = 5;
     // Used to determine if the game is currently running already.
 var gameState = false;
 
+    // Used to determine if someone is currently at the start screen or not.
+var startScreen = false;
+
 //___________________________________________////
 // References for Firebase Realtime Database ////
 
@@ -42,6 +45,8 @@ var gameState = false;
     // player2Name
     // player1Choice
     // player2Choice
+    // gameState
+    // startScreen
 
 // Nodes ////
     // messagesSection
@@ -65,15 +70,21 @@ var database = firebase.database();
 database.ref().on("value", function(snapshot) {
 
     // Log everything that's coming out of snapshot
-    console.log(snapshot.val());
+    // console.log(snapshot.val());
+    console.log("player1Name: " + snapshot.val().player1Name);
+    console.log("player2Name: " + snapshot.val().player2Name);
+    console.log("gameState: " + snapshot.val().gameState);
+    console.log("startScreen: " + snapshot.val().startScreen);
     player1 = snapshot.val().player1Name;
     player2 = snapshot.val().player2Name;
-
+    gameState = snapshot.val().gameState;
+    startScreen = snapshot.val().startScreen;
+    checkGameState();
+    goBtn();
     
 });
 
 //___________________________________________////
-
 
 //___________________________////
 // Function Chain References ////
@@ -93,37 +104,55 @@ database.ref().on("value", function(snapshot) {
 // Functions____________________////
 
 // Start Screen //
-// This function runs on document load and clears the database of any prior used player names.
-function clearNames() {
-    $("#start-screen-info").hide();
-    // Assigns the value, "" to the variables: nameHolder, playerName1, playerName2
-    nameHolder = "";
-    playerName1 = "";
-    playerName2 = "";
-    // IF, the gameState variable is set to FALSE.
-    if (gameState === false) {
-        // THEN, send the above variables to the database.
-        database.ref().set({
-            player1Name: "",
-            player2Name: ""
-        })
+// Starting function to set key-pair, startScreen to TRUE.
+function userAtStartScreen() {
+    database.ref().update({
+        startScreen: true
+    });
+}
 
-    // ELSE, inform the user that the game is in session and to please wait.
-    } else {
-        // Change later to target $("#start-screen-info").text("");
-        console.log("The Game is in Session, please wait...")
-    }   
+// Checks the gameState from the database and informs the user if a game is in progress.
+// AND sets startScreen key-pair to TRUE.
+function checkGameState() {
+    console.log("checkGameState(); function has been called");
+    // IF, gameState is TRUE.. THEN, .show() #game-in-progress.
+    if (gameState === true) {
+        console.log("#game-in-session message should be showing");
+        $("#game-in-session").show();
+        // Change #go-btn to RED, change text to ⦸
+        $("#go-btn").removeClass("bg-success");
+        $("#go-btn").text("⦸")
+        $("#go-btn").addClass("bg-danger");
+    }
+    // IF, gameState is FALSE.. THEN, .hide() #game-in-progress.
+    if (gameState === false) {
+        console.log("#game-in-session message should be hidden");
+        $("#game-in-session").hide();
+        $("#go-btn").removeClass("bg-danger");
+        $("#go-btn").text("GO!")
+        $("#go-btn").addClass("bg-success");
+    }
+} /// checkGameState();
+
+// Uses .hide() method to hide enter-a-name messages.
+function hideStartInfo() {
+    $("#enter-a-name").hide();  
 } /// clearNames();
 
 // Sets up click functionality, and calls the function noNameCheck();
 function goBtn() {
     console.log("goBtn(); function has been called");
-    // .on Click event listener
-    $("#go-btn").on("click", function() {
-        console.log("#go-btn, has been clicked!");
-        // When user clicks, call noNameCheck();
-        noNameCheck();
-    });
+    // Only run if game is not already in progress.
+    if (gameState === false) {
+        // .on Click event listener
+        $("#go-btn").on("click", function() {
+            console.log("#go-btn, has been clicked!");
+            // When user clicks, call noNameCheck();
+            noNameCheck();
+        });
+    } else {
+        console.log("#go-btn should not be functioning.");
+    }
 } /// goBtn();
 
 // Checks to see if a player entered a name or not.
@@ -134,10 +163,10 @@ function noNameCheck() {
     // Check if text-input field (#player-name) is blank.
     // IF, blank. THEN, inform player to, "Please enter a name."
     if (name === "") {
-        $("#start-screen-info").show();
+        $("#enter-a-name").show();
     // ELSE, place value from text input box into the variable nameHolder
     } else {
-        $("#start-screen-info").hide();
+        $("#enter-a-name").hide();
         $("#player-name").val("");
         nameHolder = name;
         console.log("nameHolder: " + nameHolder);
@@ -153,7 +182,8 @@ function playerName() {
     if (player1 === "") {
         // THEN, set nameHolder to value of the key-pair of player1Name.
         database.ref().update({
-            player1Name: nameHolder
+            player1Name: nameHolder,
+            gameState: true,            
         });
         console.log("player1: " + player1);
         setGameScreen();
@@ -161,21 +191,24 @@ function playerName() {
     } else if (player2 === "") {
         // THEN, set nameHolder to value of the key-pair of player2Name.
         database.ref().update({
-            player2Name: nameHolder
+            player2Name: nameHolder,
+            gameState: true,            
         });
         console.log("player2: " + player2);
         setGameScreen();
-    // ELSE, inform the user to: "The Game is in Session, please wait..."
+    // ELSE, inform the user to: "Game in Session, please wait..."
     } else {
-        // Change later to target $("#start-screen-info").text("");
-        console.log("The Game is in Session, please wait...");
+        $("#game-in-session").show();
     } 
 } /// playerName1();
 
 // Dynamically generates the game screen.
 function setGameScreen() {
-    // Sets the variable gameState to TRUE.
-    gameState = true;
+    // Set key-value pair of startScreen to FALSE.
+    database.ref().update({
+        startScreen: false,
+        gameState: true            
+    });
     // Replaces HTML elements on DOM with HTML to build the game-screen.
     $("#screen").html(
 
@@ -508,25 +541,91 @@ function displayGameInfo() {
 
 //______________________________////
 
-//------------------------------------------------------------------------//
-//Diagnostic-tools                                                        //
-function consoleClickCheck() {                                            //
+//-----------------------------------------------------------------=-------//
+//Diagnostic-tools                                                         //
+function consoleClickCheck() {                                             //
     $(document).on("click", function() {
         console.log("Diagnostic-tool----------");
         
         console.log("-------------------------");   
     });
 } ///function to console.log on each click.                                //
-// consoleClickCheck(); // Comment-in this line to use the above function.//
-//------------------------------------------------------------------------//
+// consoleClickCheck(); // Comment-in this line to use the above function. //
+//-----------------------------------------------------=-------------------//
 
 ////Diagnostic-tool////
 // consoleClickCheck();
 ///////////////////////
 
+//---------------------------------------------------------------------------------------------------//
+// Event Listener to determine when a user has closed (unloaded the window)                          //
+// and then clear the key-value pairs that determine if a user is player 1 or 2.                     //
+window.onbeforeunload = function (e) {
+    if (gameState === false) {
+        database.ref().update({
+            player1Name: "",
+            player2Name: ""
+        });
+    }
+} 
+//----------------------------------------------------------------------------------------------------//
+
+window.onunload = function (e) {
+    if (gameState === true) {
+        database.ref().update({
+            gameState: false
+        });
+    }
+    if (startScreen === true) {
+        database.ref().update({
+            startScreen: false
+        });
+    }
+}
+
 // Main Game Code ////
-clearNames();
-goBtn();
+userAtStartScreen();
+hideStartInfo();
+
+
 
 
 });  ///$(document).ready(function() {});
+
+
+    // // IF, users are playing OR at the start screen (but not BOTH), clear playerName key-pairs.
+    // if (gamestate === true && startScreen === false) {
+    //     database.ref().update({
+    //         player1Name: "",
+    //         player2Name: "",
+    //         gameState: false
+    //     });
+    // }
+    // if (gameState === false && startScreen === true) {
+    //     database.ref().update({
+    //         player1Name: "",
+    //         player2Name: "",
+    //         startScreen: false
+    //     });
+    // }
+
+
+// if (gameState === false && startScreen === true ||
+//     gamestate === true && startScreen === false) {
+        // database.ref().update({
+        //     player1Name: "",
+        //     player2Name: "",
+        // });
+//         // If user is at startScreen and they unload window, set startScreen key-pair to false.
+//         if (startScreen === true) {
+//             database.ref().update({
+//                 startScreen: false
+//             });
+//         }
+//         // If user is at startScreen and they unload window, set gameState key-pair to false.
+//         if (gameState === true) {
+            // database.ref().update({
+            //     gameState: false
+            // });
+//         }                                       
+// } 
