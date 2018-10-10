@@ -239,7 +239,7 @@ function setGameScreen() {
                         
                         '<!-- Col 2 (Top Display Panel)-->' +
                         '<div id="td-panel" class="col-4 d-flex align-items-center justify-content-center">' +
-                            '<img src="assets/images/tp-go.jpg" class="border border-dark rounded m-0">' +
+                            '<img src="assets/images/tp-rps.jpg" class="border border-dark rounded m-0">' +
                         '</div>' +
                         
                         '<!-- Col 3 (Round Number)-->' +
