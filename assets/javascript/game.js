@@ -39,11 +39,26 @@ var startScreen = false;
 
 // Objects ////
 
-rpsObj = {};
+topDisplayObj = {
+    rps: "assets/images/tp-rps.jpg",
+    rock: "assets/images/tp-rock.jpg",
+    paper: "assets/images/tp-paper.jpg",
+    scissors: "assets/images/tp-scissors.jpg",
+    blank: "assets/images/tp-blank.jpg"
+};
 
-topDisplayObj = {};
+rpsObj = {
+    rock: "assets/images/rock.jpg",
+    paper: "assets/images/paper.jpg",
+    scissors: "assets/images/scissors.jpg",
+    blank: "assets/images/blank.jpg"
+};
 
-winPanelObj = {};
+winPanelObj = {
+    p1: "assets/images/wp-p1.jpg",
+    p2: "assets/images/wp-p2.jpg",
+    tieGame: "assets/images/wp-tg.jpg"
+};
 
 
 
