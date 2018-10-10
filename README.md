@@ -45,6 +45,10 @@ This project is being created for a homework assignnment through my UCLAx coding
 #### This Document to be revised/updated as project progresses.
 
 ### Update-log:
+#### 10/10/2018 - 12:49am
+* In-Process:
+    * Coding all functions.
+
 #### 10/08/2018 - 11:30pm
 * Complete:
     * Rough list of features/functions of game.

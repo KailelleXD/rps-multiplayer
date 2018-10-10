@@ -6,6 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>ROCK, PAPER, SCISSORS, GO!!!</title>
 
+    <!-- Firebase Link -->
+    <script src="https://www.gstatic.com/firebasejs/5.5.3/firebase.js"></script>
+
     <!-- Bootstrap Link -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
@@ -19,10 +22,12 @@
     <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"> 
     </script>
+
+    <!-- Javascript Link -->
+    <script src="assets/javascript/game.js"></script>
     
 </head>
 <body>
-
     <div class="row justify-content-center">
         
         <!-- Main Column 1 -->
@@ -58,7 +63,7 @@
                 
                 <!-- Col 1 (Player 1 Choice) -->
                 <div class="col-4 m-0 p-0">
-                    <img src="assets/images/scissors.jpg" class="center-block border border-light rounded mt-1">
+                    <img src="assets/images/scissors.jpg" id="p1Img" class="center-block border border-light rounded mt-1">
                 </div>
                 
                 <!-- Col 2 (Winner Panel) -->
@@ -69,7 +74,7 @@
                 
                 <!-- Col 3 (Player 2 Choice) -->
                 <div class="col-4 m-0 p-0">
-                    <img src="assets/images/paper.jpg" class="center-block border border-light rounded mt-1">
+                    <img src="assets/images/paper.jpg" id="p2Img" class="center-block border border-light rounded mt-1">
                 </div>
             </div>
 
@@ -179,8 +184,5 @@
         </div>
 
     </div>
-
-
-    
 </body>
 </html>
