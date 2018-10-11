@@ -24,6 +24,10 @@ ul {
     list-style-position: inside;
 }
 
+#emoji {
+    font-size: 150%;
+}
+
 .main-wrap {
     width: 980px;
     border-color: black;
