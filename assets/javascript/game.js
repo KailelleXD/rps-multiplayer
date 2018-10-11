@@ -118,6 +118,13 @@ database.ref().on("value", function(snapshot) {
     
 });
 
+
+database.ref("messages/").once("child_added", function(snapshot) {
+    displayMessages();
+}, function(errorObject) {
+    console.log("Errors handled: " + errorObject.code);
+});
+
 //___________________________________________////
 
 //___________________________////
@@ -630,7 +637,6 @@ function chatBtn() {
             var messagesRef = database.ref("messages/");
             var newPostKey = messagesRef.push(msgToStore).key
             console.log("newPostKey: " + newPostKey);
-            displayMessages();
         });
 } /// chatBtn();
 
