@@ -67,7 +67,9 @@ rpsObj = {
 winPanelObj = {
     p1: "assets/images/wp-p1.jpg",
     p2: "assets/images/wp-p2.jpg",
-    tieGame: "assets/images/wp-tg.jpg"
+    tieGame: "assets/images/wp-tg.jpg",
+    blank: "assets/images/wp-blank.jpg",
+    huh: "assets/images/wp-huh.jpg"
 };
 
 
@@ -127,6 +129,14 @@ database.ref().on("value", function(snapshot) {
 database.ref("btnState/").on("value", function(snapshot) {
     let st = snapshot.val().readyState;
     readyBtnCheck(st);
+})
+
+database.ref("score/").on("value", function(snapshot) {
+    let win1 = snapshot.val().w1;
+    let win2 = snapshot.val().w2;
+    let loss1 = snapshot.val().l1;
+    let loss2 = snapshot.val().l2;
+    scoreChecker(win1,win2,loss1,loss2);
 })
 
 
@@ -328,21 +338,21 @@ function setGameScreen() {
                             '<!-- Sub sub Row 1 -->' +
                             '<div class="row panel-border-dark d-flex justify-content-center m-0">' +
                                 '<!-- Sub Col 1 -->' +
-                                '<div class="col-3 bg-dark text-light d-flex justify-content-center">0</div>' +
+                                '<div id="w1" class="col-3 bg-dark text-light d-flex justify-content-center">0</div>' +
                                 '<!-- Sub Col 2 -->' +
                                 '<div class="col-3 bg-light d-flex justify-content-center m-0 py-0 px-4">Wins</div>' +
                                 '<!-- Sub Col 3 -->' +
-                                '<div class="col-3 bg-dark text-light d-flex justify-content-center">0</div>' +
+                                '<div id="w2" class="col-3 bg-dark text-light d-flex justify-content-center">0</div>' +
                             '</div>' +
         
                             '<!-- Sub sub Row 2 -->' +
                             '<div class="row panel-border-dark d-flex justify-content-center m-0">' +
                                 '<!-- Sub Col 1 -->' +
-                                '<div class="col-3 bg-light d-flex justify-content-center">0</div>' +
+                                '<div id="l1" class="col-3 bg-light d-flex justify-content-center">0</div>' +
                                 '<!-- Sub Col 2 -->' +
                                 '<div class="col-3 bg-dark text-light d-flex justify-content-center m-0 py-0 px-4">Losses</div>' +
                                 '<!-- Sub Col 3 -->' +
-                                '<div class="col-3 bg-light d-flex justify-content-center">0</div>' +
+                                '<div id="l2" class="col-3 bg-light d-flex justify-content-center">0</div>' +
                             '</div>' +
         
                         '</div>' +
@@ -625,27 +635,60 @@ function winLossState() {
 function player1Wins() {
     console.log("player1Wins called");
     // Increment: p1Wins, p2Losses.
+    p1Wins++;
+    p2Losses++;
+    tallyScores();
     // In Win Panel, display msg: "Player 1 Wins!"
+    $("#win-panel").attr("src", winPanelObj.p1)
     // call nextRound();
+    nextRound();
 } /// player1Wins();
 
 // Increments the variables that apply to a player 2 win.
 function player2Wins() {
     console.log("player2Wins called");
 // Increment: p2Wins, p1Losses.
+    p2Wins++;
+    p1Losses++;
+    tallyScores();
     // In Win Panel, display msg: "Player 2 Wins!"
+    $("#win-panel").attr("src", winPanelObj.p2)
     // call nextRound();
+    nextRound();
 } /// player2Wins();
 
 // When game is tied, display a msg in Win Panel.
 function tieGame() {
     console.log("tieGame called");
     // In Win Panel, Display msg: "It's a Tie!"
+    $("#win-panel").attr("src", winPanelObj.tieGame)
     // Call nextRound();
+    nextRound();
 } /// tieGame();
 
+// When neither player takes an action, display ??? in Win Panel.
 function bothBlank() {
     console.log("bothBlank called")
+    $("#win-panel").attr("src", winPanelObj.huh)
+    nextRound();
+}
+
+// Store the updated scores in the dbase.
+function tallyScores() {
+    database.ref("score/").update({
+        w1: p1Wins,
+        w2: p2Wins,
+        l1: p1Losses,
+        l2: p2Losses
+    });
+} /// tallyScores();
+
+// Get the scores from the dbase and display on the scoreboard.
+function scoreChecker(p1W, p2W, p1L, p2L) {
+    $("#w1").html(p1W);
+    $("#w2").html(p2W);
+    $("#l1").html(p1L);
+    $("#l2").html(p2L);
 }
 
 // Waits for 3 secs, then increments the round, clears the Win Panel, display a game info message and calls readyBtn();
