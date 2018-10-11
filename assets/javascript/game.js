@@ -35,21 +35,25 @@ var p2Losses = 0;
 
     // Round and Interval Counter.
 var round = 1;
-var counter = 5;
+var countdown = 5;
 
     // Used to determine if the game is currently running already.
 var gameState = 0;
+
+var readyState = 0;
+var resetState = 0;
 
     // Used to determine if someone is currently at the start screen or not.
 var startScreen = false;
 
 // Objects ////
 
-topDisplayObj = {
+topPanelObj = {
     rps: "assets/images/tp-rps.jpg",
     rock: "assets/images/tp-rock.jpg",
     paper: "assets/images/tp-paper.jpg",
     scissors: "assets/images/tp-scissors.jpg",
+    go: "assets/images/tp-go.jpg",
     blank: "assets/images/tp-blank.jpg"
 };
 
@@ -268,8 +272,8 @@ function setGameScreen() {
                         '</div>' +
                         
                         '<!-- Col 2 (Top Display Panel)-->' +
-                        '<div id="td-panel" class="col-4 d-flex align-items-center justify-content-center">' +
-                            '<img src="assets/images/tp-rps.jpg" class="border border-dark rounded m-0">' +
+                        '<div class="col-4 d-flex align-items-center justify-content-center">' +
+                            '<img src="assets/images/tp-rps.jpg" id="tp-display" class="border border-dark rounded m-0">' +
                         '</div>' +
                         
                         '<!-- Col 3 (Round Number)-->' +
@@ -357,18 +361,17 @@ function setGameScreen() {
                             '<img src="assets/images/scissors.jpg" data-state="scissors" class="choice center-block border border-light rounded mt-1">' +
                         '</div>' +
                     '</div>' +
-        
+//////////////////////////////////////////////////////////////////////////////////////////////////////
                     '<!-- Sub Row 5 (Ready Button, Reset Button) -->' +
                     '<div class="row mb-2 mx-1">' +
                         
                         '<!-- Col 1 (Ready Button) -->' +
-                        '<div class="col-6 bg-secondary rounded border border-dark d-flex justify-content-center">READY</div>' +
+                        '<div id="ready-btn" class="col-6 bg-secondary rounded border border-dark d-flex justify-content-center" data-state="off">READY</div>' +
                         
                         '<!-- Col 2 (Reset Button) -->' +
-                        '<div class="col-6 bg-secondary rounded border border-dark d-flex justify-content-center">RESET</div>' +
+                        '<div id="reset-btn" class="col-6 bg-secondary rounded border border-dark d-flex justify-content-center" data-state="off">RESET</div>' +
                     '</div>' +
-        
-                    
+/////////////////////////////////////////////////////////////////////////////////////////////////////       
                 '</div>' +
         
                 '<!-- Main Column 2 -->' +
@@ -403,38 +406,88 @@ function setGameScreen() {
             displayMsgsLive();
             displayInfoLive();
             chatBtn();
-            choiceClicks();
+            readyBtn();
 } /// setGameScreen();
 
 
 // Game Area //
 // Sets up click functionality, checks the btn data-state: off, partial, full. (refer to research-list.js)
 function readyBtn() {
+    $("#ready-btn").css("cursor", "pointer");
     // On user click:
-    // Check [Data-State] attribute for a value of: off, partial, or full.
-    // IF, value === "off". THEN, set value to: partial.
-        // Change button bg-color to: yellow.
-    // IF, value === "partial". THEN set value to: full.
-        // Change button bg-color to: green.
-        // Call gameStart();
-    // IF, value === "full". THEN, set value to: off.
-        // Change button bg-color to: gray.
+    $(document).on("click", "#ready-btn", function() {
+        // Check [Data-State] attribute for a value of: off, partial, or full.
+        let state = $("#ready-btn").attr("data-state");
+        // console.log(state);
+        // Switch statement, takes the variable 'state' and cycles through data-states: off(0)>partial(1)>full(2)
+        switch(state) {
+            case "off":
+                $("#ready-btn").attr("data-state", "partial");
+                $("#ready-btn").removeClass("bg-secondary");
+                $("#ready-btn").addClass("bg-warning");
+                readyBtnState("partial"); 
+                break;
+            case "partial":
+                $("#ready-btn").attr("data-state", "full");
+                $("#ready-btn").removeClass("bg-warning");
+                $("#ready-btn").addClass("bg-success");
+                readyBtnState("full"); 
+                // gameStart();
+                break;
+            case "full":
+                $("#ready-btn").attr("data-state", "off");
+                $("#ready-btn").removeClass("bg-success");
+                $("#ready-btn").addClass("bg-secondary");
+                readyBtnState("off"); 
+        }
+    });
 } /// readyBtn();
+
+// Updates the readyState key-value pair with the current state.
+function readyBtnState(state) {
+    database.ref().update({
+        readyState: state
+    });
+} /// readyBtnState(state); //off/partial/full//
+
+// function readyBtnCheck(state) {
+//     switch(state) {
+//         case "off":
+//             $("#ready-btn").attr("data-state", "partial");
+//             $("#ready-btn").removeClass("bg-secondary");
+//             $("#ready-btn").addClass("bg-warning");
+//             readyBtnState("partial"); 
+//             break;
+//         case "partial":
+//             $("#ready-btn").attr("data-state", "full");
+//             $("#ready-btn").removeClass("bg-warning");
+//             $("#ready-btn").addClass("bg-success");
+//             readyBtnState("full"); 
+//             gameStart();
+//             break;
+//         case "full":
+//             $("#ready-btn").attr("data-state", "off");
+//             $("#ready-btn").removeClass("bg-success");
+//             $("#ready-btn").addClass("bg-secondary");
+//             readyBtnState("off"); 
+//     }
+// }
 
 // Calls the necessary functions to start each round.
 function gameStart() {
-    // Call topPanelStart();
-    // Call choiceClicks();
+    // console.log("gameStart(); function has been called")
+    topPanelStart();
+    choiceClicks();
 } /// gameStart();
 
 // Sets up click functionality, for each <img> and stores both player's choices.
 function choiceClicks() {
+    console.log("choiceClicks(); function has been called");
     // On user click:
     $(".choice").css("cursor", "pointer");
     $(document).on("click", ".choice", function() {
         let state = $(this).attr("data-state");
         // console.log("You clicked " + state + "!");
-
         if (whichPlayerAmI === "Player 1") {
             // console.log("Player 1");
             switch(state) {
@@ -490,24 +543,51 @@ function choiceClicks() {
 
 // Starts a countdown to display: ROCK, PAPER, SCISSORS, GO! in the Top Panel Display.
 function topPanelStart() {
+    console.log("topPanelStart(); function has been called");
     // Start a 5 sec. countdown.
-    // @ "4", display: "ROCK" in Top Panel Display   
-    // @ "3", display: "PAPER"
-    // @ "2", display: "SCISSORS"
-    // @ "1", display: "GO!"
-    // @ "0", Call playerDefaultCheck();
+    countdown = 5;
+    var intervalId = setInterval(function() {
+        countdown--;
+        switch(countdown) {
+            case 4:
+                $("#tp-display").attr("src", topPanelObj.rock);
+                break;
+            case 3:
+                $("#tp-display").attr("src", topPanelObj.paper);            
+                break;
+            case 2:
+                $("#tp-display").attr("src", topPanelObj.scissors);
+                break;
+            case 1:
+                $("#tp-display").attr("src", topPanelObj.go);
+                break;
+            case 0:
+                $("#tp-display").attr("src", topPanelObj.blank);
+                break;
+            case -1:
+                $("#tp-display").attr("src", topPanelObj.rps);
+                clearInterval(intervalId);
+                playerDefaultCheck(); 
+        }
+    }, 1000);
 } /// topPanelStart();
 
 // Checks to determine if player made a choice within the alotted 1 sec. time frame.
 function playerDefaultCheck() {
+    // console.log(this + "function has been called");
     // IF, userChoice === "blank"
-    // THEN, in Game Info Panel, display the variable: whichPlayerAmI + "failed to make a choice in time!" (database)
-        // call winLossState();
-    // ELSE, call winLossState();
+    if (userChoice === "blank") {
+        // THEN, in Game Info Panel, display the variable: whichPlayerAmI + "failed to make a choice in time!" (database)
+        infoPoster(whichPlayerAmI + ": failed to make a choice in time!");
+        winLossState();
+    } else {
+        winLossState();
+    }
 } /// playerDefaultCheck();
 
 // Determines who won/lost and calls the appropriate function.
 function winLossState() {
+    console.log(this + "function has been called");
     // IF, p1Choice === "rock" && p2Choice === "scissors" ||
         // p1Choice === "paper" && p2Choice === "rock" ||
         // p1Choice === "scissors" && p2Choice === "paper" ||
@@ -663,7 +743,7 @@ function infoPoster(msg) {
         // Use PUSH to store the message in the messagesSection part of the (database)
             var gameInfoRef = database.ref("messages/");
             gameInfoRef.push(msg).key
-} /// infoPoster(put msg variable here);
+} /// infoPoster("Place msg in quotes here");
 
 // Checks the database when (child is added) and refreshes the Game Info Display.
 function displayGameInfo() {
@@ -688,7 +768,7 @@ function displayInfoLive () {
     }, function(errorObject) {
         console.log("Errors handled: " + errorObject.code);
     });
-}
+} /// displayInfoLive();
 
 
 //______________________________////
