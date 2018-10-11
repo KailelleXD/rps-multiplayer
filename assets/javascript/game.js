@@ -598,7 +598,9 @@ function playerDefaultCheck() {
 
 // Determines who won/lost and calls the appropriate function.
 function winLossState() {
-    console.log("winLossState(); function has been called");
+    // console.log("winLossState(); function has been called");
+    console.log("p1C is: " + p1Choice);
+    console.log("p2Choice is: " + p2Choice);
     // IF, p1Choice === "rock" && p2Choice === "scissors" ||
         // p1Choice === "paper" && p2Choice === "rock" ||
         // p1Choice === "scissors" && p2Choice === "paper" ||
