@@ -7,8 +7,6 @@ $(document).ready(function() {
 var nameHolder = "";
 var player1 = "";
 var player2 = "";
-var p1C = "";
-var p2C = "";
 var allMsgs = "";
 
     // Variables that determine what to do based on if a user is Player 1 or 2.
@@ -17,8 +15,8 @@ var playerToCheck = ""; // "p1" or "p2"
 
     // Locally stored variable for either player 1 or 2's choice of Rock, Paper, or Scissors.
 var userChoice = "blank";
-var p1Choice = ""; //
-var p2Choice = ""; // might not need these.
+var p1Choice = "blank";
+var p2Choice = "blank"; 
 var player1Name = "";
 var player2Name = "";
 
@@ -117,10 +115,10 @@ database.ref().on("value", function(snapshot) {
     player2 = snapshot.val().player2Name;
     gameState = snapshot.val().gameState;
     startScreen = snapshot.val().startScreen;
-    p1C = snapshot.val().player1Choice;
-    p2C = snapshot.val().player2Choice;
+    p1Choice = snapshot.val().player1Choice;
+    p2Choice = snapshot.val().player2Choice;
        
-    playerDisplay(p1C, p2C);
+    playerDisplay(p1Choice, p2Choice);
     checkGameState();
     goBtn();
     
@@ -498,6 +496,7 @@ function choiceClicks() {
     $(".choice").css("cursor", "pointer");
     $(document).on("click", ".choice", function() {
         let state = $(this).attr("data-state");
+        userChoice = state;
         // console.log("You clicked " + state + "!");
         if (whichPlayerAmI === "Player 1") {
             // console.log("Player 1");
@@ -574,11 +573,12 @@ function topPanelStart() {
                 break;
             case 0:
                 $("#tp-display").attr("src", topPanelObj.blank);
+                playerDefaultCheck(); 
                 break;
             case -1:
                 $("#tp-display").attr("src", topPanelObj.rps);
                 clearInterval(intervalId);
-                playerDefaultCheck(); 
+                
         }
     }, 1000);
 } /// topPanelStart();
@@ -599,23 +599,31 @@ function playerDefaultCheck() {
 // Determines who won/lost and calls the appropriate function.
 function winLossState() {
     // console.log("winLossState(); function has been called");
-    console.log("p1C is: " + p1Choice);
-    console.log("p2Choice is: " + p2Choice);
-    // IF, p1Choice === "rock" && p2Choice === "scissors" ||
-        // p1Choice === "paper" && p2Choice === "rock" ||
-        // p1Choice === "scissors" && p2Choice === "paper" ||
-        // p2Choice === "blank"
-    // THEN, call player1Wins();
-    // ELSE IF, p2Choice === "rock" && p1Choice === "scissors" ||
-        // p2Choice === "paper" && p1Choice === "rock" ||
-        // p2Choice === "scissors" && p1Choice === "paper" ||
-        // p1Choice === "blank"
-    // THEN, call player2Wins();
-    // ELSE, call tieGame();
+    // console.log("p1Choice is: " + p1Choice);
+    // console.log("p2Choice is: " + p2Choice);
+    if (p1Choice === "rock" && p2Choice === "scissors" ||
+        p1Choice === "paper" && p2Choice === "rock" ||
+        p1Choice === "scissors" && p2Choice === "paper" ||
+        p1Choice !== "" && p2Choice === "") {
+            player1Wins();
+        } else if (
+            p2Choice === "rock" && p1Choice === "scissors" ||
+            p2Choice === "paper" && p1Choice === "rock" ||
+            p2Choice === "scissors" && p1Choice === "paper" ||
+            p2Choice !== "" && p1Choice === "") {
+                player2Wins();
+        } else if (p1Choice === "rock" && p2Choice === "rock" ||
+        p1Choice === "paper" && p2Choice === "paper" ||
+        p1Choice === "scissors" && p2Choice === "scissors") {
+            tieGame();
+        } else if (p1Choice === "" && p2Choice === "") {
+            bothBlank();
+        }
 } /// winLossState();
 
 // Increments the variables that apply to a player 1 win.
 function player1Wins() {
+    console.log("player1Wins called");
     // Increment: p1Wins, p2Losses.
     // In Win Panel, display msg: "Player 1 Wins!"
     // call nextRound();
@@ -623,6 +631,7 @@ function player1Wins() {
 
 // Increments the variables that apply to a player 2 win.
 function player2Wins() {
+    console.log("player2Wins called");
 // Increment: p2Wins, p1Losses.
     // In Win Panel, display msg: "Player 2 Wins!"
     // call nextRound();
@@ -630,9 +639,14 @@ function player2Wins() {
 
 // When game is tied, display a msg in Win Panel.
 function tieGame() {
+    console.log("tieGame called");
     // In Win Panel, Display msg: "It's a Tie!"
     // Call nextRound();
 } /// tieGame();
+
+function bothBlank() {
+    console.log("bothBlank called")
+}
 
 // Waits for 3 secs, then increments the round, clears the Win Panel, display a game info message and calls readyBtn();
 function nextRound() {
