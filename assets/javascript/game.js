@@ -39,7 +39,6 @@ var gameState = 0;
 
 var readyState = 0;
 var resetState = 0;
-var resetBool = true;
 
     // Used to determine if someone is currently at the start screen or not.
 var startScreen = false;
@@ -169,16 +168,8 @@ database.ref().on("value", function(snapshot) {
 // Start Screen //
 // Starting function to set key-pair, startScreen to TRUE.
 function userAtStartScreen() {
-    database.ref().update({
-        startScreen: true
-    });
-    database.ref("btnState/").update({
-        readyState: "off"
-    });
-    database.ref("score/").update({
-        round: 1
-    })
-}
+
+} /// userAtStartScreen();
 
 // Checks the gameState from the database and informs the user if a game is in progress.
 // AND sets startScreen key-pair to TRUE.
@@ -574,7 +565,6 @@ function topPanelStart() {
     // console.log("topPanelStart(); function has been called");
     // Start a 5 sec. countdown.
     countdown = 5;
-    resetBool = false;
     var intervalId = setInterval(function() {
         countdown--;
         switch(countdown) {
@@ -596,7 +586,6 @@ function topPanelStart() {
                 break;
             case -1:
                 $("#tp-display").attr("src", topPanelObj.rps);
-                resetBool = true;
                 clearInterval(intervalId);
                 
         }
@@ -707,7 +696,6 @@ function scoreChecker(p1W, p2W, p1L, p2L, rN) {
 function nextRound() {
     // Starts a 3 sec. countdown.
     shortCountdown = 3;
-    resetBool = false;
     var intervalId = setInterval(function() {
         shortCountdown--;
         console.log(shortCountdown);
@@ -731,7 +719,6 @@ function nextRound() {
             });
 
             infoPoster("Starting Round " + round + ", Both players click READY to start!");
-            resetBool = true;
             clearInterval(intervalId);                 
         }
     }, 1000);
@@ -739,38 +726,39 @@ function nextRound() {
 
 // Sets up click functionality, checks the btn data-state: off, partial, full. (refer to research-list.js)
 function resetBtn() {
-        // On user click:
-        $(document).on("click", "#reset-btn", function() {
-            // Check [Data-State] attribute for a value of: off, partial, or full.
-            let state = $("#reset-btn").attr("data-state");
-            // console.log(state);
-            // Switch statement, takes the variable 'state' and cycles through data-states: off>partial>full
-            switch(state) {
-                case "off":
-                    $("#reset-btn").attr("data-state", "partial");
-                    $("#reset-btn").removeClass("bg-secondary");
-                    $("#reset-btn").addClass("bg-warning");
+    $("#reset-btn").css("cursor", "pointer");
+    // On user click:
+    $(document).on("click", "#reset-btn", function() {
+        // Check [Data-State] attribute for a value of: off, partial, or full.
+        let state = $("#reset-btn").attr("data-state");
+        // console.log(state);
+        // Switch statement, takes the variable 'state' and cycles through data-states: off>partial>full
+        switch(state) {
+            case "off":
+                $("#reset-btn").attr("data-state", "partial");
+                $("#reset-btn").removeClass("bg-secondary");
+                $("#reset-btn").addClass("bg-warning");
                     database.ref("btnState/").update({
                         resetState: "partial"
                     });
-                    break;
-                case "partial":
-                    $("#reset-btn").attr("data-state", "full");
-                    $("#reset-btn").removeClass("bg-warning");
-                    $("#reset-btn").addClass("bg-success");
+                break;
+            case "partial":
+                $("#reset-btn").attr("data-state", "full");
+                $("#reset-btn").removeClass("bg-warning");
+                $("#reset-btn").addClass("bg-success");
                     database.ref("btnState/").update({
                         resetState: "full"
                     });
-                    break;
-                case "full":
-                    $("#reset-btn").attr("data-state", "off");
-                    $("#reset-btn").removeClass("bg-success");
-                    $("#reset-btn").addClass("bg-secondary");
+                break;
+            case "full":
+                $("#reset-btn").attr("data-state", "off");
+                $("#reset-btn").removeClass("bg-success");
+                $("#reset-btn").addClass("bg-secondary");
                     database.ref("btnState/").update({
                         resetState: "off"
                     });
-                }   
-            });    
+        }   
+    });    
 } /// resetBtn();
 
 function resetBtnCheck(state) {
@@ -779,18 +767,20 @@ function resetBtnCheck(state) {
     switch(state) {
         case "off":
         $("#reset-btn").attr("data-state", "off");
-        $("#reset-btn").removeClass("bg-success");
+        $("#reset-btn").removeClass("bg-warning bg-success");
         $("#reset-btn").addClass("bg-secondary");
             break;
         case "full":
         $("#reset-btn").attr("data-state", "full");
-        $("#reset-btn").removeClass("bg-warning");
+        $("#reset-btn").removeClass("bg-secondary bg-warning");
         $("#reset-btn").addClass("bg-success");
+            database.ref("messages/").remove();
+            infoPoster("Game has been reset!");
             resetGame();
             break;
         case "partial":
         $("#reset-btn").attr("data-state", "partial");
-        $("#reset-btn").removeClass("bg-secondary");
+        $("#reset-btn").removeClass("bg-success bg-secondary");
         $("#reset-btn").addClass("bg-warning");
             break;
     }
@@ -823,6 +813,10 @@ function resetGame() {
     });
 
     chgDisplay("","");
+    database.ref("messages/").remove();
+    
+
+    
 } /// resetGame();
 
 // Checks to see if user is Player 1 or 2, then displays the correct name from the database.
@@ -988,7 +982,20 @@ window.onunload = function (e) {
 //----------------------------------------------------------------------------------------------------//
 
 // Main Game Code ////
-userAtStartScreen();
+// userAtStartScreen();
 hideStartInfo();
 
 });  ///$(document).ready(function() {});
+
+// On document load set the values of the following key-pairs and set the startScreen bool to true.
+$(document).onload(function() {
+    database.ref().update({
+        startScreen: true
+    });
+    database.ref("btnState/").update({
+        readyState: "off"
+    });
+    database.ref("score/").update({
+        round: 1
+    })
+});
