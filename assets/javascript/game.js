@@ -128,9 +128,11 @@ database.ref().on("value", function(snapshot) {
 });
 
 database.ref("btnState/").on("value", function(snapshot) {
-    let st = snapshot.val().readyState;
-    readyBtnCheck(st);
-})
+    let ready = snapshot.val().readyState;
+    let reset = snapshot.val().resetState;
+    readyBtnCheck(ready);
+    resetBtnCheck(reset);
+});
 
 database.ref("score/").on("value", function(snapshot) {
     let win1 = snapshot.val().w1;
@@ -139,7 +141,13 @@ database.ref("score/").on("value", function(snapshot) {
     let loss2 = snapshot.val().l2;
     let rNum = snapshot.val().round;
     scoreChecker(win1,win2,loss1,loss2,rNum);
-})
+});
+
+database.ref().on("value", function(snapshot) {
+    player1 = snapshot.val().player1Name;
+    player2 = snapshot.val().player2Name;
+    showPlayerName(player1, player2);
+});
 
 
 
@@ -171,6 +179,9 @@ function userAtStartScreen() {
     database.ref("btnState/").update({
         readyState: "off"
     });
+    database.ref("score/").update({
+        round: 1
+    })
 }
 
 // Checks the gameState from the database and informs the user if a game is in progress.
@@ -289,7 +300,7 @@ function setGameScreen() {
                         '<div class="col-4">' +
                             '<div>' +
                                 '<p class="d-flex align-items-start justify-content-center my-0 py-0 ">Player 1:</p>' +
-                                '<p id="player-name-panel" class="d-flex align-items-start justify-content-center my-0 py-0 ">Stevo</p>' +
+                                '<p id="player-name-panel" class="d-flex align-items-start justify-content-center my-0 py-0 "></p>' +
                             '</div>' +
                         '</div>' +
                         
@@ -427,6 +438,7 @@ function setGameScreen() {
             displayInfoLive();
             chatBtn();
             readyBtn();
+            resetBtn();
 } /// setGameScreen();
 
 
@@ -690,7 +702,7 @@ function scoreChecker(p1W, p2W, p1L, p2L, rN) {
     $("#w2").html(p2W);
     $("#l1").html(p1L);
     $("#l2").html(p2L);
-    $("#r-Num").html(rN);
+    $("#r-num").html(rN);
 }
 
 // Waits for 3 secs, then increments the round, clears the Win Panel, display a game info message and calls readyBtn();
@@ -701,11 +713,10 @@ function nextRound() {
         shortCountdown--;
         console.log(shortCountdown);
         if (shortCountdown === 0) {
-             
+            
+            chgDisplay("blank","blank");
 
             $("#tp-display").attr("src", topPanelObj.rps);
-            $("#p1-display").attr("src", rpsObj.blank);
-            $("#p2-display").attr("src", rpsObj.blank);
             $("#win-panel").attr("src", winPanelObj.blank);
 
             $("#ready-btn").attr("data-state", "off");
@@ -728,44 +739,77 @@ function nextRound() {
 
 // Sets up click functionality, checks the btn data-state: off, partial, full. (refer to research-list.js)
 function resetBtn() {
+    $("#reset-btn").css("cursor", "pointer");
     // On user click:
-    // Check [Data-State] attribute for a value of: off, partial, or full.
-    // IF, value === "off". THEN, set value to: partial.
-        // Change button bg-color to: yellow.
-    // IF, value === "partial". THEN set value to: full.
-        // Change button bg-color to: green.
-        // Call resetGame();
+    $(document).on("click", "#reset-btn", function() {
+        // Check [Data-State] attribute for a value of: off, partial, or full.
+        let state = $("#reset-btn").attr("data-state");
+        // console.log(state);
+        // Switch statement, takes the variable 'state' and cycles through data-states: off>partial>full
+        switch(state) {
+            case "off":
+                $("#reset-btn").attr("data-state", "partial");
+                $("#reset-btn").removeClass("bg-secondary");
+                $("#reset-btn").addClass("bg-warning");
+                database.ref("btnState/").update({
+                    resetState: "partial"
+                });
+                break;
+            case "partial":
+                $("#reset-btn").attr("data-state", "full");
+                $("#reset-btn").removeClass("bg-warning");
+                $("#reset-btn").addClass("bg-success");
+                database.ref("btnState/").update({
+                    resetState: "full"
+                });
+                break;
+            case "full":
+                $("#reset-btn").attr("data-state", "off");
+                $("#reset-btn").removeClass("bg-success");
+                $("#reset-btn").addClass("bg-secondary");
+                database.ref("btnState/").update({
+                    resetState: "off"
+                });
+        }
+    });
+} /// resetBtn();
 
-    // Need to prevent one player clicking twice. Using Boolean values??
-
-} /// readyBtn();    
+function resetBtnCheck(state) {
+        // console.log("resetBtnCheck has been called")
+    // console.log(state);
+    switch(state) {
+        case "off":
+        $("#reset-btn").attr("data-state", "off");
+        $("#reset-btn").removeClass("bg-success");
+        $("#reset-btn").addClass("bg-secondary");
+            break;
+        case "full":
+        $("#reset-btn").attr("data-state", "full");
+        $("#reset-btn").removeClass("bg-warning");
+        $("#reset-btn").addClass("bg-success");
+            resetGame();
+            break;
+        case "partial":
+        $("#reset-btn").attr("data-state", "partial");
+        $("#reset-btn").removeClass("bg-secondary");
+        $("#reset-btn").addClass("bg-warning");
+            break;
+    }
+}
 
 // Clears the required variables on browser/database to reset the game.
 function resetGame() {
-    // Set variables: p1Wins, p1Losses, p2Wins, p2Losses to a value of 0.
-    // Set variable: round to a value of 1.
-    // Set readyBtn [data-state] attribute to: off.
-        // Change readyBtn bg-color to: gray.
-    // Set resetBtn [data-state] attribute to: off.
-        // Change resetBtn bg-color to: gray.
-    // Change player1Display <img> [data-type] attribute to: blank.
-    // Change player2Display <img> [data-type] attribute to: blank.
+
 } /// resetGame();
 
-// Takes in the argument (pChk) and returns a value of: "p1" or "p2", depending on if (pChk) is equal to: "Player 1" or "Player 2"
-function whichPlayerToCheck(pChk) {
-    // IF, (pChk) === "Player 1"
-    // THEN return "p1". ELSE, return "p2"
-} /// playerToCheck = whichPlayerToCheck(whichPlayerAmI);
-
 // Checks to see if user is Player 1 or 2, then displays the correct name from the database.
-function showPlayerName(pToChk) {
-    // IF, (pToChk) === "p1"
-    // THEN, get Player 1 value from the (database)
-        // $("#player-name").text(THE VALUE OF PLAYER 1 KEY)
-    // ELSE, get Player 2 value from the (database)
-        // and display at #player-name
-} /// showPlayerName(playerToCheck);
+function showPlayerName(pN1, pN2) {
+    if (whichPlayerAmI === "Player 1") {
+        $("#player-name-panel").html(pN1);
+    } else if (whichPlayerAmI === "Player 2") {
+        $("#player-name-panel").html(pN2);
+    } 
+} /// showPlayerName(pN1,pN2);
 
 // Using pass-through arguments, we take player1Choice and player2Choice from the dbase and display the approriate image to both players.
 function playerDisplay(p1Choice, p2Choice) {
@@ -779,6 +823,8 @@ function playerDisplay(p1Choice, p2Choice) {
             case "scissors":
                 $("#p1-display").attr("src", rpsObj.scissors);
                 break;
+            case "blank":
+                $("#p1-display").attr("src", rpsObj.blank);
         }
         switch(p2Choice) {
             case "rock":
@@ -790,9 +836,17 @@ function playerDisplay(p1Choice, p2Choice) {
             case "scissors":
                 $("#p2-display").attr("src", rpsObj.scissors);
                 break;
+            case "blank":
+                $("#p2-display").attr("src", rpsObj.blank);
         }
 } /// playerDisplay();
 
+function chgDisplay(p1Choice, p1Choice) {
+    database.ref().update({
+        player1Choice: p1Choice,
+        player2Choice: p2Choice
+    })
+} /// chgDisplay("","");
 
 // Chat Area //
 // Sets up click functionality, takes text info from text-box and stores it in the proper location in the database.
