@@ -36,6 +36,7 @@ var p2Losses = 0;
     // Round and Interval Counter.
 var round = 1;
 var countdown = 5;
+var shortCountdown = 3;
 
     // Used to determine if the game is currently running already.
 var gameState = 0;
@@ -136,7 +137,8 @@ database.ref("score/").on("value", function(snapshot) {
     let win2 = snapshot.val().w2;
     let loss1 = snapshot.val().l1;
     let loss2 = snapshot.val().l2;
-    scoreChecker(win1,win2,loss1,loss2);
+    let rNum = snapshot.val().round;
+    scoreChecker(win1,win2,loss1,loss2,rNum);
 })
 
 
@@ -300,7 +302,7 @@ function setGameScreen() {
                         '<div class="col-4">' +
                             '<div>' +
                                 '<p class="d-flex align-items-start justify-content-center my-0 ">Round:</p>' +
-                                '<p id="round-number" class="d-flex align-items-start justify-content-center my-0 ">1</p>' +
+                                '<p id="r-num" class="d-flex align-items-start justify-content-center my-0 ">1</p>' +
                             '</div>' +
                         '</div>' +
                     '</div>' +
@@ -381,7 +383,6 @@ function setGameScreen() {
                             '<img src="assets/images/scissors.jpg" data-state="scissors" class="choice center-block border border-light rounded mt-1">' +
                         '</div>' +
                     '</div>' +
-//////////////////////////////////////////////////////////////////////////////////////////////////////
                     '<!-- Sub Row 5 (Ready Button, Reset Button) -->' +
                     '<div class="row mb-2 mx-1">' +
                         
@@ -390,8 +391,7 @@ function setGameScreen() {
                         
                         '<!-- Col 2 (Reset Button) -->' +
                         '<div id="reset-btn" class="col-6 bg-secondary rounded border border-dark d-flex justify-content-center" data-state="off">RESET</div>' +
-                    '</div>' +
-/////////////////////////////////////////////////////////////////////////////////////////////////////       
+                    '</div>' +      
                 '</div>' +
         
                 '<!-- Main Column 2 -->' +
@@ -673,7 +673,7 @@ function bothBlank() {
     nextRound();
 }
 
-// Store the updated scores in the dbase.
+// Store the updated scores in the dbase. AND number of rounds!!
 function tallyScores() {
     database.ref("score/").update({
         w1: p1Wins,
@@ -683,22 +683,47 @@ function tallyScores() {
     });
 } /// tallyScores();
 
-// Get the scores from the dbase and display on the scoreboard.
-function scoreChecker(p1W, p2W, p1L, p2L) {
+// Get the scores (and round!) from the dbase and display on the scoreboard.
+function scoreChecker(p1W, p2W, p1L, p2L, rN) {
+    console.log("scoreChecker has been called");
     $("#w1").html(p1W);
     $("#w2").html(p2W);
     $("#l1").html(p1L);
     $("#l2").html(p2L);
+    $("#r-Num").html(rN);
 }
 
 // Waits for 3 secs, then increments the round, clears the Win Panel, display a game info message and calls readyBtn();
 function nextRound() {
     // Starts a 3 sec. countdown.
-    // @ "0":
-        // Increment: round.
-        // clear text from Win Panel.
-        // push game info to gameInfoSection (database)
-        // call readyBtn();
+    shortCountdown = 3;
+    var intervalId = setInterval(function() {
+        shortCountdown--;
+        console.log(shortCountdown);
+        if (shortCountdown === 0) {
+             
+
+            $("#tp-display").attr("src", topPanelObj.rps);
+            $("#p1-display").attr("src", rpsObj.blank);
+            $("#p2-display").attr("src", rpsObj.blank);
+            $("#win-panel").attr("src", winPanelObj.blank);
+
+            $("#ready-btn").attr("data-state", "off");
+            $("#ready-btn").removeClass("bg-success");
+            $("#ready-btn").addClass("bg-secondary");
+            database.ref("btnState/").update({
+                readyState: "off"
+            });
+
+            round++;
+            database.ref("score/").update({
+                round: round
+            });
+
+            infoPoster("Starting Round " + round + ", Both players click READY to start!");
+            clearInterval(intervalId);                 
+        }
+    }, 1000);
 } /// nextRound();
 
 // Sets up click functionality, checks the btn data-state: off, partial, full. (refer to research-list.js)
