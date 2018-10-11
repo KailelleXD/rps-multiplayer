@@ -4,7 +4,8 @@ font-family: 'Mirza', cursive;
 */
 
 body {
-    background-image: url("https://picsum.photos/1920/1080");
+    /* background-color: rgb(186, 209, 214); */
+    background-color: rgb(48, 114, 139);
     font-family: 'Mirza', cursive;
     font-size: 105%;
     max-width: 1080px;
@@ -31,7 +32,7 @@ ul {
 }
 
 .chat-panel {
-    background-color: rgb(187, 206, 211);
+    /* background-color: rgb(187, 206, 211); */
     border-radius: 25px;
     border-color: black;
     border-style: solid;

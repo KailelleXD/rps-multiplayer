@@ -58,7 +58,8 @@ rpsObj = {
     rock: "assets/images/rock.jpg",
     paper: "assets/images/paper.jpg",
     scissors: "assets/images/scissors.jpg",
-    blank: "assets/images/blank.jpg"
+    blank: "assets/images/blank.jpg",
+    no: "assets/images/no.jpg"
 };
 
 winPanelObj = {
@@ -392,7 +393,7 @@ function setGameScreen() {
                 '</div>' +
         
                 '<!-- Main Column 2 -->' +
-                '<div id="msg-panel" class="content-wrapper col-6 mx-1 chat-panel">' +
+                '<div id="msg-panel" class="content-wrapper col-6 mx-1 bg-primary chat-panel">' +
         
                     '<!-- Row 1 (Game Title) -->' +
                     '<div class="row bg-light title-round px-3"><H1 class="pt-2">ROCK, PAPER, SCISSORS... GO!!!</H1></div>' +
@@ -409,9 +410,9 @@ function setGameScreen() {
                 '<div id="chat-box" class="chat-entry d-flex align-items-end">' +
                     '<div class="input-group input-group-sm mb-3">' +
                         '<div class="input-group-prepend">' +
-                            '<button class="chat-button input-group-text border border-white" id="inputGroup-sizing-sm">CHAT</button>' +
+                            '<button class="chat-button input-group-text border border-dark" id="inputGroup-sizing-sm">CHAT</button>' +
                         '</div>' +
-                        '<input type="text" id="text-input" class="form-control border border-light" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">' +
+                        '<input type="text" id="text-input" class="form-control border border-dark" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">' +
                     '</div>' +
                 '</div>' +
             '</div>'
@@ -580,6 +581,8 @@ function topPanelStart() {
                 break;
             case 0:
                 $("#tp-display").attr("src", topPanelObj.blank);
+                $("#p1-display").attr("src", rpsObj.no)
+                $("#p2-display").attr("src", rpsObj.no)
                 playerDefaultCheck(); 
                 break;
             case -1:
@@ -997,6 +1000,10 @@ $(window).on("load",function() {
         readyState: "off"
     });
     firebase.database().ref("score/").update({
-        round: 1
+        round: 1,
+        w1: 0,
+        w2: 0,
+        l1: 0,
+        l2: 0
     })
 });
