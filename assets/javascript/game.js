@@ -416,6 +416,36 @@ function setGameScreen() {
                 '</div>' +
             '</div>'
         
+
+
+
+
+
+            '</div>' +
+
+            '<!-- Row 3 (Chat Entry) -->' +
+                    '<div class="row chat-entry d-flex align-items-end">' +
+                        '<div class="input-group input-group-sm mb-3">' +
+                            '<div class="input-group-prepend">' +
+                                '<button class="input-group-text" id="inputGroup-sizing-sm">CHAT</button>' +
+                            '</div>' +
+                            '<input type="text" id="text-input" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">' +
+                        '</div>' +
+                    '</div>' +
+                    '<div id="game-info-panel" class="game-panel m-0 p-0">' +
+                    '</div>' +
+                '</div>' 
+        
+            );
+
+
+
+
+
+
+
+
+
             );
 
             infoPoster(whichPlayerAmI + ": " + userName + ", has joined the game!");
