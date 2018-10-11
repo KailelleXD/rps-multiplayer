@@ -124,6 +124,10 @@ database.ref().on("value", function(snapshot) {
     
 });
 
+database.ref().once("value", function(snapshot) {
+    readyBtnCheck();
+})
+
 //___________________________________________////
 
 //___________________________////
@@ -148,6 +152,9 @@ database.ref().on("value", function(snapshot) {
 function userAtStartScreen() {
     database.ref().update({
         startScreen: true
+    });
+    database.ref().update({
+        readyState: "off"
     });
 }
 
@@ -450,27 +457,59 @@ function readyBtnState(state) {
     });
 } /// readyBtnState(state); //off/partial/full//
 
-// function readyBtnCheck(state) {
-//     switch(state) {
-//         case "off":
-//             $("#ready-btn").attr("data-state", "partial");
-//             $("#ready-btn").removeClass("bg-secondary");
-//             $("#ready-btn").addClass("bg-warning");
-//             readyBtnState("partial"); 
-//             break;
-//         case "partial":
-//             $("#ready-btn").attr("data-state", "full");
-//             $("#ready-btn").removeClass("bg-warning");
-//             $("#ready-btn").addClass("bg-success");
-//             readyBtnState("full"); 
-//             gameStart();
-//             break;
-//         case "full":
-//             $("#ready-btn").attr("data-state", "off");
-//             $("#ready-btn").removeClass("bg-success");
-//             $("#ready-btn").addClass("bg-secondary");
-//             readyBtnState("off"); 
-//     }
+function readyBtnCheck() {
+    database.ref().once("value", function(snapshot) {
+        var state = snapshot.val().readyState;
+        if (state === "off") {
+            $("#ready-btn").attr("data-state", "partial");
+            $("#ready-btn").removeClass("bg-secondary");
+            $("#ready-btn").addClass("bg-warning");
+            readyBtnState("partial"); 
+        }
+    });
+
+    database.ref().once("value", function(snapshot) {
+        var state = snapshot.val().readyState;
+        if (state === "partial") {
+            $("#ready-btn").attr("data-state", "full");
+            $("#ready-btn").removeClass("bg-warning");
+            $("#ready-btn").addClass("bg-success");
+            readyBtnState("full"); 
+            gameStart();
+        }
+    });
+
+    database.ref().once("value", function(snapshot) {
+        var state = snapshot.val().readyState;
+        if (state === "off") {
+            $("#ready-btn").attr("data-state", "off");
+            $("#ready-btn").removeClass("bg-success");
+            $("#ready-btn").addClass("bg-secondary");
+            readyBtnState("off"); 
+        }
+    });
+
+} /// readyBtnCheck();
+
+// switch(state) {
+//     case "off":
+//         $("#ready-btn").attr("data-state", "partial");
+//         $("#ready-btn").removeClass("bg-secondary");
+//         $("#ready-btn").addClass("bg-warning");
+//         readyBtnState("partial"); 
+//         break;
+//     case "partial":
+//         $("#ready-btn").attr("data-state", "full");
+//         $("#ready-btn").removeClass("bg-warning");
+//         $("#ready-btn").addClass("bg-success");
+//         readyBtnState("full"); 
+//         gameStart();
+//         break;
+//     case "full":
+//         $("#ready-btn").attr("data-state", "off");
+//         $("#ready-btn").removeClass("bg-success");
+//         $("#ready-btn").addClass("bg-secondary");
+//         readyBtnState("off"); 
 // }
 
 // Calls the necessary functions to start each round.
@@ -587,7 +626,7 @@ function playerDefaultCheck() {
 
 // Determines who won/lost and calls the appropriate function.
 function winLossState() {
-    console.log(this + "function has been called");
+    console.log("winLossState(); function has been called");
     // IF, p1Choice === "rock" && p2Choice === "scissors" ||
         // p1Choice === "paper" && p2Choice === "rock" ||
         // p1Choice === "scissors" && p2Choice === "paper" ||
