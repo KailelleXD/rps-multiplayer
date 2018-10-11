@@ -448,7 +448,6 @@ function readyBtn() {
                 database.ref("btnState/").update({
                     readyState: "full"
                 });
-                gameStart();
                 break;
             case "full":
                 $("#ready-btn").attr("data-state", "off");
@@ -475,6 +474,7 @@ function readyBtnCheck(state) {
             $("#ready-btn").attr("data-state", "full");
             $("#ready-btn").removeClass("bg-warning");
             $("#ready-btn").addClass("bg-success");
+            gameStart();
                 break;
             case "partial":
             $("#ready-btn").attr("data-state", "partial");
