@@ -239,7 +239,7 @@ function setGameScreen() {
         '<div class="row justify-content-center">' +
                 
                 '<!-- Main Column 1 -->' +
-                '<div class="content-wrapper col-4 bg-primary mx-1 p-1 rps-image">' +
+                '<div id="rps-panel" class="content-wrapper col-4 bg-primary mx-1 p-1 rps-image">' +
                     
                     '<!-- Sub Row 1 (Player Name, Top Display Panel, Round Number) -->' +
                     '<div class="row mt-1 mb-3">' +
@@ -329,17 +329,17 @@ function setGameScreen() {
                         
                         '<!-- Col 1 (Player Choice: [ROCK]) -->' +
                         '<div class="col-4 m-0 p-0">' +
-                            '<img src="assets/images/rock.jpg" class="center-block border border-light rounded mt-1">' +
+                            '<img src="assets/images/rock.jpg" class="choice center-block border border-light rounded mt-1">' +
                         '</div>' +
                         
                         '<!-- Col 2 (Player Choice: [PAPER])-->' +
                         '<div class="col-4 m-0 p-0">' +
-                            '<img src="assets/images/paper.jpg" class="center-block border border-light rounded mt-1">' +
+                            '<img src="assets/images/paper.jpg" class="choice center-block border border-light rounded mt-1">' +
                         '</div>' +
                         
                         '<!-- Col 3 (Player Choice: [SCISSORS])-->' +
                         '<div class="col-4 m-0 p-0">' +
-                            '<img src="assets/images/scissors.jpg" class="center-block border border-light rounded mt-1">' +
+                            '<img src="assets/images/scissors.jpg" class="choice center-block border border-light rounded mt-1">' +
                         '</div>' +
                     '</div>' +
         
@@ -357,7 +357,7 @@ function setGameScreen() {
                 '</div>' +
         
                 '<!-- Main Column 2 -->' +
-                '<div class="content-wrapper col-6 mx-1 chat-panel">' +
+                '<div id="msg-panel" class="content-wrapper col-6 mx-1 chat-panel">' +
         
                     '<!-- Row 1 (Game Title) -->' +
                     '<div class="row bg-light title-round px-3"><H1 class="pt-2">ROCK, PAPER, SCISSORS... GO!!!</H1></div>' +
@@ -379,9 +379,9 @@ function setGameScreen() {
                     '<div class="row chat-entry d-flex align-items-end">' +
                         '<div class="input-group input-group-sm mb-3">' +
                             '<div class="input-group-prepend">' +
-                                '<span class="input-group-text" id="chat-btn inputGroup-sizing-sm">CHAT</span>' +
+                                '<button class="input-group-text" id="inputGroup-sizing-sm">CHAT</button>' +
                             '</div>' +
-                            '<input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">' +
+                            '<input type="text" id="text-input" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">' +
                         '</div>' +
                     '</div>' +
                     '<div id="game-info-panel" class="game-panel m-0 p-0">' +
@@ -420,6 +420,14 @@ function gameStart() {
 // Sets up click functionality, for each <img> and stores both player's choices.
 function choiceClicks() {
     // On user click:
+    $(document).on("click", "#inputGroup-sizing-sm", function() {
+        console.log("#inputGroup-sizing-sm (Chat Button), has been clicked!");
+        // Assign the value of the text-box into the variable: message.
+        message = $("#text-input").val().trim();
+        console.log(whichPlayerAmI + ": " + message);
+        $("#text-input").empty()
+        // Use PUSH to store the message in the messagesSection part of the (database)
+    });
     // Assign the value found in [data-value] attriute to the variable: userChoice.
     // IF, the variable: whichPlayerAmI === "p1"
     // THEN, store the value in the player1Choice key-pair (database)
@@ -544,9 +552,12 @@ function playerDisplay() {
 // Sets up click functionality, takes text info from text-box and stores it in the proper location in the database.
 function chatBtn() {
     // On user click:
-    $("#chat-btn").on("click", function() {
-        console.log("#chat-btn, has been clicked!");
+    $(document).on("click", "#inputGroup-sizing-sm", function() {
+        console.log("#inputGroup-sizing-sm (Chat Button), has been clicked!");
         // Assign the value of the text-box into the variable: message.
+        message = $("#text-input").val().trim();
+        console.log(whichPlayerAmI + ": " + message);
+        $("#text-input").empty()
         // Use PUSH to store the message in the messagesSection part of the (database)
     });
 } /// chatBtn();
