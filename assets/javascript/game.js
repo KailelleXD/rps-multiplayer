@@ -719,7 +719,7 @@ function nextRound() {
                 round: round
             });
 
-            infoPoster("Starting Round " + round + ", Both players click READY to start!");
+            newInfoMsg("Starting Round " + round + ", Both players click READY to start!");
             clearInterval(intervalId);                 
         }
     }, 1000);
@@ -776,7 +776,7 @@ function resetBtnCheck(state) {
         $("#reset-btn").removeClass("bg-secondary bg-warning");
         $("#reset-btn").addClass("bg-success");
             database.ref("messages/").remove();
-            infoPoster("Game has been reset!");
+            newInfoMsg("Game has been reset!");
             resetGame();
             break;
         case "partial":
@@ -914,6 +914,12 @@ function infoPoster(msg) {
             var gameInfoRef = database.ref("messages/");
             gameInfoRef.push(msg).key
 } /// infoPoster("Place msg in quotes here");
+
+function newInfoMsg(msg) {
+    if (whichPlayerAmI === "Player 1") {
+    infoPoster(msg);
+    }
+}
 
 // Checks the database when (child is added) and refreshes the Game Info Display.
 function displayGameInfo() {
