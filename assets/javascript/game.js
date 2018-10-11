@@ -23,6 +23,8 @@ var p2Choice = ""; // might not need these.
     // Variables to send message and game info strings to the firebase realtime database.
 var post = "";
 var displayPosts = "";
+var info = "";
+var displayInfo = "";
 var gameInfo = "";
 
     // Counters to keep track of wins/losses for each player.
@@ -77,8 +79,8 @@ winPanelObj = {
     // startScreen
 
 // Nodes ////
-    // messagesSec
-    // gameInfoSec
+    // messages
+    // gameInfoMsgs
 
 // Initialize Firebase
 var config = {
@@ -397,7 +399,9 @@ function setGameScreen() {
         
             );
 
+            infoPoster(whichPlayerAmI + ": " + userName + ", has joined the game!");
             displayMsgsLive();
+            displayInfoLive();
             chatBtn();
             choiceClicks();
 } /// setGameScreen();
@@ -627,8 +631,7 @@ function chatBtn() {
         $("#text-input").val("");
         // Use PUSH to store the message in the messagesSection part of the (database)
             var messagesRef = database.ref("messages/");
-            var newPostKey = messagesRef.push(msgToStore).key
-            // console.log("newPostKey: " + newPostKey);
+            messagesRef.push(msgToStore).key
         });
 } /// chatBtn();
 
@@ -656,21 +659,36 @@ function displayMsgsLive () {
     });
 }
 
-
-
-// Checks the database when (child is added) and refreshes the Chat Area Display.
-function chatAreaDisplay() {
-    // Anytime a msg string is added to messagesSection in the (database),
-    // the Chat Area will update to display the strings (key-values),
-    // in sequential order, in the chat area.
-} /// chatAreaDisplay();
+function infoPoster(msg) {
+        // Use PUSH to store the message in the messagesSection part of the (database)
+            var gameInfoRef = database.ref("messages/");
+            gameInfoRef.push(msg).key
+} /// infoPoster(put msg variable here);
 
 // Checks the database when (child is added) and refreshes the Game Info Display.
 function displayGameInfo() {
-    // Anytime a gameInfo string is added to the gameInfoSection in the (database),
-    // the game info panel will update to display the strings (key-values),
-    // in sequential order, in the game info panel. 
+    database.ref("gameInfoMsgs/").on("child_added", function(snapshot) {
+  
+        // console.log(snapshot.val());
+        displayInfo = snapshot.val();
+        
+        var newDiv = $("<div>");
+        newDiv.text(displayInfo);
+        $("#game-info-panel").append(newDiv);
+    
+        // Handle the errors
+    }, function(errorObject) {
+        console.log("Errors handled: " + errorObject.code);
+    });
 } /// displayGameinfo();
+
+function displayInfoLive () {
+    database.ref("gameInfoMsgs/").once("child_added", function(snapshot) {
+        displayGameInfo();
+    }, function(errorObject) {
+        console.log("Errors handled: " + errorObject.code);
+    });
+}
 
 
 //______________________________////
