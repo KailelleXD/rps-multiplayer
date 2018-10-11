@@ -7,11 +7,9 @@ $(document).ready(function() {
 var nameHolder = "";
 var player1 = "";
 var player2 = "";
-var allMsgs = "";
 
     // Variables that determine what to do based on if a user is Player 1 or 2.
 var whichPlayerAmI = ""; // "Player 1" or "Player 2"
-var playerToCheck = ""; // "p1" or "p2"
 
     // Locally stored variable for either player 1 or 2's choice of Rock, Paper, or Scissors.
 var userChoice = "blank";
@@ -23,9 +21,7 @@ var player2Name = "";
     // Variables to send message and game info strings to the firebase realtime database.
 var post = "";
 var displayPosts = "";
-var info = "";
 var displayInfo = "";
-var gameInfo = "";
 
     // Counters to keep track of wins/losses for each player.
 var p1Wins = 0;
@@ -43,6 +39,7 @@ var gameState = 0;
 
 var readyState = 0;
 var resetState = 0;
+var resetBool = true;
 
     // Used to determine if someone is currently at the start screen or not.
 var startScreen = false;
@@ -148,7 +145,6 @@ database.ref().on("value", function(snapshot) {
     player2 = snapshot.val().player2Name;
     showPlayerName(player1, player2);
 });
-
 
 
 //___________________________________________////
@@ -578,6 +574,7 @@ function topPanelStart() {
     // console.log("topPanelStart(); function has been called");
     // Start a 5 sec. countdown.
     countdown = 5;
+    resetBool = false;
     var intervalId = setInterval(function() {
         countdown--;
         switch(countdown) {
@@ -599,6 +596,7 @@ function topPanelStart() {
                 break;
             case -1:
                 $("#tp-display").attr("src", topPanelObj.rps);
+                resetBool = true;
                 clearInterval(intervalId);
                 
         }
@@ -697,7 +695,7 @@ function tallyScores() {
 
 // Get the scores (and round!) from the dbase and display on the scoreboard.
 function scoreChecker(p1W, p2W, p1L, p2L, rN) {
-    console.log("scoreChecker has been called");
+    // console.log("scoreChecker has been called");
     $("#w1").html(p1W);
     $("#w2").html(p2W);
     $("#l1").html(p1L);
@@ -709,6 +707,7 @@ function scoreChecker(p1W, p2W, p1L, p2L, rN) {
 function nextRound() {
     // Starts a 3 sec. countdown.
     shortCountdown = 3;
+    resetBool = false;
     var intervalId = setInterval(function() {
         shortCountdown--;
         console.log(shortCountdown);
@@ -732,6 +731,7 @@ function nextRound() {
             });
 
             infoPoster("Starting Round " + round + ", Both players click READY to start!");
+            resetBool = true;
             clearInterval(intervalId);                 
         }
     }, 1000);
@@ -739,39 +739,38 @@ function nextRound() {
 
 // Sets up click functionality, checks the btn data-state: off, partial, full. (refer to research-list.js)
 function resetBtn() {
-    $("#reset-btn").css("cursor", "pointer");
-    // On user click:
-    $(document).on("click", "#reset-btn", function() {
-        // Check [Data-State] attribute for a value of: off, partial, or full.
-        let state = $("#reset-btn").attr("data-state");
-        // console.log(state);
-        // Switch statement, takes the variable 'state' and cycles through data-states: off>partial>full
-        switch(state) {
-            case "off":
-                $("#reset-btn").attr("data-state", "partial");
-                $("#reset-btn").removeClass("bg-secondary");
-                $("#reset-btn").addClass("bg-warning");
-                database.ref("btnState/").update({
-                    resetState: "partial"
-                });
-                break;
-            case "partial":
-                $("#reset-btn").attr("data-state", "full");
-                $("#reset-btn").removeClass("bg-warning");
-                $("#reset-btn").addClass("bg-success");
-                database.ref("btnState/").update({
-                    resetState: "full"
-                });
-                break;
-            case "full":
-                $("#reset-btn").attr("data-state", "off");
-                $("#reset-btn").removeClass("bg-success");
-                $("#reset-btn").addClass("bg-secondary");
-                database.ref("btnState/").update({
-                    resetState: "off"
-                });
-        }
-    });
+        // On user click:
+        $(document).on("click", "#reset-btn", function() {
+            // Check [Data-State] attribute for a value of: off, partial, or full.
+            let state = $("#reset-btn").attr("data-state");
+            // console.log(state);
+            // Switch statement, takes the variable 'state' and cycles through data-states: off>partial>full
+            switch(state) {
+                case "off":
+                    $("#reset-btn").attr("data-state", "partial");
+                    $("#reset-btn").removeClass("bg-secondary");
+                    $("#reset-btn").addClass("bg-warning");
+                    database.ref("btnState/").update({
+                        resetState: "partial"
+                    });
+                    break;
+                case "partial":
+                    $("#reset-btn").attr("data-state", "full");
+                    $("#reset-btn").removeClass("bg-warning");
+                    $("#reset-btn").addClass("bg-success");
+                    database.ref("btnState/").update({
+                        resetState: "full"
+                    });
+                    break;
+                case "full":
+                    $("#reset-btn").attr("data-state", "off");
+                    $("#reset-btn").removeClass("bg-success");
+                    $("#reset-btn").addClass("bg-secondary");
+                    database.ref("btnState/").update({
+                        resetState: "off"
+                    });
+                }   
+            });    
 } /// resetBtn();
 
 function resetBtnCheck(state) {
@@ -799,7 +798,31 @@ function resetBtnCheck(state) {
 
 // Clears the required variables on browser/database to reset the game.
 function resetGame() {
+    p1Wins = 0;
+    p2Wins = 0;
+    p1Losses = 0;
+    p2Losses = 0;
+    tallyScores();
+    round = 1;
+    database.ref("score/").update({
+        round: round
+    });
 
+    $("#reset-btn").attr("data-state", "off");
+    $("#reset-btn").removeClass("bg-success");
+    $("#reset-btn").addClass("bg-secondary");
+    database.ref("btnState/").update({
+        resetState: "off"
+    });
+
+    $("#ready-btn").attr("data-state", "off");
+    $("#ready-btn").removeClass("bg-success");
+    $("#ready-btn").addClass("bg-secondary");
+    database.ref("btnState/").update({
+        readyState: "off"
+    });
+
+    chgDisplay("","");
 } /// resetGame();
 
 // Checks to see if user is Player 1 or 2, then displays the correct name from the database.
@@ -919,7 +942,6 @@ function displayInfoLive () {
     });
 } /// displayInfoLive();
 
-
 //______________________________////
 
 //-----------------------------------------------------------------=-------//
@@ -968,8 +990,5 @@ window.onunload = function (e) {
 // Main Game Code ////
 userAtStartScreen();
 hideStartInfo();
-
-
-
 
 });  ///$(document).ready(function() {});
