@@ -215,6 +215,7 @@ function playerName() {
     // IF, playerName1 key-value is "" (empty).
     if (player1 === "") {
         whichPlayerAmI = "Player 1";
+        userName = nameHolder;
         // THEN, set nameHolder to value of the key-pair of player1Name.
         database.ref().update({
             player1Name: nameHolder,
@@ -225,6 +226,7 @@ function playerName() {
     // ELSE IF, playerName2 key-value is "" (empty).
     } else if (player2 === "") {
         whichPlayerAmI = "Player 2";
+        userName = nameHolder;
         // THEN, set nameHolder to value of the key-pair of player2Name.
         database.ref().update({
             player2Name: nameHolder,
@@ -622,30 +624,19 @@ function chatBtn() {
         console.log("#inputGroup-sizing-sm (Chat Button), has been clicked!");
         // Assign the value of the text-box into the variable: message.
         post = $("#text-input").val().trim();
-        console.log(whichPlayerAmI + ": " + post);
+        let msgToStore = userName + ": " + post;
         $("#text-input").val("");
         // Use PUSH to store the message in the messagesSection part of the (database)
-            
-        
-
-
-    
-
             var messagesRef = database.ref("messages/");
-            var newPostKey = messagesRef.push(post).key
+            var newPostKey = messagesRef.push(msgToStore).key
             console.log("newPostKey: " + newPostKey);
-
-            // console.log("try this: " + snapshot.val().messages.newPostKey)
-
-
             displayMessages();
-            });
+        });
 } /// chatBtn();
 
 function displayMessages() {
     database.ref("messages/").on("child_added", function(snapshot) {
   
-        // console.log("inside of m/c_a watcher: " + post);
         console.log(snapshot.val());
         displayPosts = snapshot.val();
         
@@ -683,11 +674,11 @@ function displayGameInfo() {
 function consoleClickCheck() {                                             //
     $(document).on("click", function() {
         console.log("Diagnostic-tool----------");
-        console.log(post);
+        // console.log(nameHolder);
         console.log("-------------------------");   
     });
 } ///function to console.log on each click.                                //
-consoleClickCheck(); // Comment-in this line to use the above function. //
+// consoleClickCheck(); // Comment-in this line to use the above function. //
 //-----------------------------------------------------=-------------------//
 
 ////Diagnostic-tool////
