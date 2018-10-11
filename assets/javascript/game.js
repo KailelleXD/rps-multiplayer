@@ -139,10 +139,10 @@ function userAtStartScreen() {
 // Checks the gameState from the database and informs the user if a game is in progress.
 // AND sets startScreen key-pair to TRUE.
 function checkGameState() {
-    console.log("checkGameState(); function has been called");
+    // console.log("checkGameState(); function has been called");
     // IF, gameState is TRUE.. THEN, .show() #game-in-progress.
     if (gameState === 2) {
-        console.log("#game-in-session message should be showing");
+        // console.log("#game-in-session message should be showing");
         $("#game-in-session").show();
         // Change #go-btn to RED, change text to ⦸
         $("#go-btn").removeClass("bg-success");
@@ -151,7 +151,7 @@ function checkGameState() {
     }
     // IF, gameState is FALSE.. THEN, .hide() #game-in-progress.
     if (gameState < 2) {
-        console.log("#game-in-session message should be hidden");
+        // console.log("#game-in-session message should be hidden");
         $("#game-in-session").hide();
         $("#go-btn").removeClass("bg-danger");
         $("#go-btn").text("GO!")
@@ -166,12 +166,12 @@ function hideStartInfo() {
 
 // Sets up click functionality, and calls the function noNameCheck();
 function goBtn() {
-    console.log("goBtn(); function has been called");
+    // console.log("goBtn(); function has been called");
     // Only run if game is not already in progress.
     if (gameState < 2) {
         // .on Click event listener
         $("#go-btn").on("click", function() {
-            console.log("#go-btn, has been clicked!");
+            // console.log("#go-btn, has been clicked!");
             // When user clicks, call noNameCheck();
             noNameCheck();
         });
@@ -182,9 +182,9 @@ function goBtn() {
 
 // Checks to see if a player entered a name or not.
 function noNameCheck() {
-    console.log("noNameCheck(); function has been called");
+    // console.log("noNameCheck(); function has been called");
     let name = $("#player-name").val();
-    console.log("The value of name is: " + name);
+    // console.log("The value of name is: " + name);
     // Check if text-input field (#player-name) is blank.
     // IF, blank. THEN, inform player to, "Please enter a name."
     if (name === "") {
@@ -194,7 +194,7 @@ function noNameCheck() {
         $("#enter-a-name").hide();
         $("#player-name").val("");
         nameHolder = name;
-        console.log("nameHolder: " + nameHolder);
+        // console.log("nameHolder: " + nameHolder);
         playerName();
     } 
 } /// noNameCheck();
@@ -205,6 +205,7 @@ function playerName() {
     console.log("player1: " + player1 + " / " + "player2: " + player2);
     // IF, playerName1 key-value is "" (empty).
     if (player1 === "") {
+        whichPlayerAmI = "Player 1";
         // THEN, set nameHolder to value of the key-pair of player1Name.
         database.ref().update({
             player1Name: nameHolder,
@@ -214,6 +215,7 @@ function playerName() {
         setGameScreen();
     // ELSE IF, playerName2 key-value is "" (empty).
     } else if (player2 === "") {
+        whichPlayerAmI = "Player 2";
         // THEN, set nameHolder to value of the key-pair of player2Name.
         database.ref().update({
             player2Name: nameHolder,
@@ -270,18 +272,18 @@ function setGameScreen() {
                     '<div class="row mb-2">' +
                         
                         '<!-- Col 1 (Player 1 Choice) -->' +
-                        '<div id="p1-display" class="col-4 m-0 p-0">' +
-                            '<img src="assets/images/blank.jpg" class="center-block border border-light rounded mt-1">' +
+                        '<div class="col-4 m-0 p-0">' +
+                            '<img src="assets/images/blank.jpg" id="p1-display" data-rock="rpsObj.rock" class="center-block border border-light rounded mt-1">' +
                         '</div>' +
                         
                         '<!-- Col 2 (Winner Panel) -->' +
-                        '<div id="win-panel" class="col-4 m-0 p-0">' +
-                            '<img src="assets/images/wp-blank.jpg" class="center-block border border-dark rounded mt-1">' +
+                        '<div class="col-4 m-0 p-0">' +
+                            '<img src="assets/images/wp-blank.jpg" id="win-panel" class="center-block border border-dark rounded mt-1">' +
                         '</div>' +
                         
                         '<!-- Col 3 (Player 2 Choice) -->' +
-                        '<div id="p2-display" class="col-4 m-0 p-0">' +
-                            '<img src="assets/images/blank.jpg" class="center-block border border-light rounded mt-1">' +
+                        '<div class="col-4 m-0 p-0">' +
+                            '<img src="assets/images/blank.jpg" id="p2-display" class="center-block border border-light rounded mt-1">' +
                         '</div>' +
                     '</div>' +
         
@@ -329,17 +331,17 @@ function setGameScreen() {
                         
                         '<!-- Col 1 (Player Choice: [ROCK]) -->' +
                         '<div class="col-4 m-0 p-0">' +
-                            '<img src="assets/images/rock.jpg" class="choice center-block border border-light rounded mt-1">' +
+                            '<img src="assets/images/rock.jpg" data-state="rock" class="choice center-block border border-light rounded mt-1">' +
                         '</div>' +
                         
                         '<!-- Col 2 (Player Choice: [PAPER])-->' +
                         '<div class="col-4 m-0 p-0">' +
-                            '<img src="assets/images/paper.jpg" class="choice center-block border border-light rounded mt-1">' +
+                            '<img src="assets/images/paper.jpg" data-state="paper" class="choice center-block border border-light rounded mt-1">' +
                         '</div>' +
                         
                         '<!-- Col 3 (Player Choice: [SCISSORS])-->' +
                         '<div class="col-4 m-0 p-0">' +
-                            '<img src="assets/images/scissors.jpg" class="choice center-block border border-light rounded mt-1">' +
+                            '<img src="assets/images/scissors.jpg" data-state="scissors" class="choice center-block border border-light rounded mt-1">' +
                         '</div>' +
                     '</div>' +
         
@@ -394,6 +396,7 @@ function setGameScreen() {
         
             );
             chatBtn();
+            choiceClicks();
 } /// setGameScreen();
 
 
@@ -420,13 +423,54 @@ function gameStart() {
 // Sets up click functionality, for each <img> and stores both player's choices.
 function choiceClicks() {
     // On user click:
-    $(document).on("click", "#inputGroup-sizing-sm", function() {
-        console.log("#inputGroup-sizing-sm (Chat Button), has been clicked!");
-        // Assign the value of the text-box into the variable: message.
-        message = $("#text-input").val().trim();
-        console.log(whichPlayerAmI + ": " + message);
-        $("#text-input").empty()
-        // Use PUSH to store the message in the messagesSection part of the (database)
+    $(".choice").css("cursor", "pointer");
+    $(document).on("click", ".choice", function() {
+        let state = $(this).attr("data-state");
+        console.log("You clicked " + state + "!");
+
+        if (whichPlayerAmI === "Player 1") {
+            console.log("Player 1");
+            switch(state) {
+                case "blank":
+                    $("#p1-display").attr("src", $(this).attr("src"));
+                break;
+    
+                case "rock":
+                    $("#p1-display").attr("src", "assets/images/rock.jpg");
+                break;
+    
+                case "paper":
+                    $("#p1-display").attr("src", $(this).attr("src"));
+                break;
+    
+                case "scissors":
+                    $("#p1-display").attr("src", $(this).attr("src"));
+                break;
+            }
+        } else if (whichPlayerAmI === "Player 2") {
+            console.log("Player 2");
+            switch(state) {
+                case "blank":
+                    $("#p2-display").attr("src", $(this).attr("data-rock"));
+                    $(this).attr("data-state", "rock");
+                break;
+    
+                case "rock":
+                    $("#p2-display").attr("src", $(this).attr("data-paper"));
+                    $("#p2-display").attr("data-state", "paper");
+                break;
+    
+                case "paper":
+                    $("#p2-display").attr("src", $(this).attr("data-scissors"));
+                    $("#p2-display").attr("data-state", "scissors");
+                break;
+    
+                case "scissors":
+                    $("#p2-display").attr("src", $(this).attr("data-blank"));
+                    $("#p2-display").attr("data-state", "blank");
+                break;    
+            }
+        }
     });
     // Assign the value found in [data-value] attriute to the variable: userChoice.
     // IF, the variable: whichPlayerAmI === "p1"
@@ -584,7 +628,6 @@ function displayGameInfo() {
 function consoleClickCheck() {                                             //
     $(document).on("click", function() {
         console.log("Diagnostic-tool----------");
-        
         console.log("-------------------------");   
     });
 } ///function to console.log on each click.                                //
