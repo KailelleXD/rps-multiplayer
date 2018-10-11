@@ -11,6 +11,10 @@ body {
     margin: auto;
 }
 
+img {
+    max-width: none;
+}
+
 h1 {
     font-family: 'Bangers', cursive;
 }
@@ -19,8 +23,16 @@ ul {
     list-style-position: inside;
 }
 
+.rps-panel {
+    /* width: 100%; */
+}
+
+.msg-panel {
+    /* width: 100%; */
+}
+
 .container {
-    max-width: 980px;
+    width: 980px;
     border-color: black;
     border-style: solid;
     border-width: medium;
