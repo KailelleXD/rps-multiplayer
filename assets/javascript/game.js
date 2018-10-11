@@ -274,10 +274,10 @@ function setGameScreen() {
     // Replaces HTML elements on DOM with HTML to build the game-screen.
     $("#screen").html(
 
-        '<div class="row justify-content-center">' +
+        '<div id="play-area" class="row justify-content-center">' +
                 
                 '<!-- Main Column 1 -->' +
-                '<div id="rps-panel" class="content-wrapper col-4 bg-primary mx-1 p-1 rps-image">' +
+                '<div id="rps-panel" class=" col-4 bg-primary mx-1 p-1 rps-image">' +
                     
                     '<!-- Sub Row 1 (Player Name, Top Display Panel, Round Number) -->' +
                     '<div class="row mt-1 mb-3">' +
@@ -403,42 +403,20 @@ function setGameScreen() {
                     '</div>' +
             '</div>' +
         
-            '<div class="row">' +
+            '<div class="row content-wrapper">' +
             '<!-- Row 3 (Chat Entry) -->' +
             '<div id="game-info-panel" class="chat-panel game-panel mt-2 px-0 pt-4 pb-1 mx-auto">' +
                 '<div id="chat-box" class="chat-entry d-flex align-items-end">' +
                     '<div class="input-group input-group-sm mb-3">' +
                         '<div class="input-group-prepend">' +
-                            '<button class="chat-button input-group-text" id="inputGroup-sizing-sm">CHAT</button>' +
+                            '<button class="chat-button input-group-text border border-white" id="inputGroup-sizing-sm">CHAT</button>' +
                         '</div>' +
-                        '<input type="text" id="text-input" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">' +
+                        '<input type="text" id="text-input" class="form-control border border-light" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">' +
                     '</div>' +
                 '</div>' +
             '</div>'
         
             );
-
-
-
-
-
-
-
-
-
-
-
-            
-
-
-
-
-
-
-
-
-
-        
 
             infoPoster(whichPlayerAmI + ": " + userName + ", has joined the game!");
             displayMsgsLive();
@@ -721,7 +699,7 @@ function nextRound() {
         console.log(shortCountdown);
         if (shortCountdown === 0) {
             
-            chgDisplay("blank","blank");
+            clrDisplay("blank");
 
             $("#tp-display").attr("src", topPanelObj.rps);
             $("#win-panel").attr("src", winPanelObj.blank);
@@ -832,7 +810,7 @@ function resetGame() {
         readyState: "off"
     });
 
-    chgDisplay("","");
+    clrDisplay("");
     database.ref("messages/").remove();
     
 
@@ -881,12 +859,12 @@ function playerDisplay(p1Choice, p2Choice) {
         }
 } /// playerDisplay();
 
-function chgDisplay(p1Choice, p1Choice) {
+function clrDisplay(replace) {
     database.ref().update({
-        player1Choice: p1Choice,
-        player2Choice: p2Choice
-    })
-} /// chgDisplay("","");
+        player1Choice: replace,
+        player2Choice: replace
+    });
+} /// clrDisplay("");
 
 // Chat Area //
 // Sets up click functionality, takes text info from text-box and stores it in the proper location in the database.
