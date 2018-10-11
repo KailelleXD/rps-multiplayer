@@ -9,6 +9,7 @@ var player1 = "";
 var player2 = "";
 var p1C = "";
 var p2C = "";
+var allMsgs = "";
 
     // Variables that determine what to do based on if a user is Player 1 or 2.
 var whichPlayerAmI = ""; // "Player 1" or "Player 2"
@@ -20,7 +21,8 @@ var p1Choice = ""; //
 var p2Choice = ""; // might not need these.
 
     // Variables to send message and game info strings to the firebase realtime database.
-var message = "";
+var post = "";
+var displayPosts = "";
 var gameInfo = "";
 
     // Counters to keep track of wins/losses for each player.
@@ -63,7 +65,6 @@ winPanelObj = {
 };
 
 
-
 //___________________________________________////
 // References for Firebase Realtime Database ////
 
@@ -76,8 +77,8 @@ winPanelObj = {
     // startScreen
 
 // Nodes ////
-    // messagesSection
-    // gameInfoSection
+    // messagesSec
+    // gameInfoSec
 
 // Initialize Firebase
 var config = {
@@ -98,24 +99,30 @@ database.ref().on("value", function(snapshot) {
 
     // Log everything that's coming out of snapshot
     // console.log(snapshot.val());
-    console.log("player1Name: " + snapshot.val().player1Name);
-    console.log("player2Name: " + snapshot.val().player2Name);
-    console.log("gameState: " + snapshot.val().gameState);
-    console.log("startScreen: " + snapshot.val().startScreen);
-    console.log("player1Choice: " + snapshot.val().player1Choice)
-    console.log("player2Choice: " + snapshot.val().player2Choice)
+    // console.log("player1Name: " + snapshot.val().player1Name);
+    // console.log("player2Name: " + snapshot.val().player2Name);
+    // console.log("gameState: " + snapshot.val().gameState);
+    // console.log("startScreen: " + snapshot.val().startScreen);
+    // console.log("player1Choice: " + snapshot.val().player1Choice)
+    // console.log("player2Choice: " + snapshot.val().player2Choice)
     player1 = snapshot.val().player1Name;
     player2 = snapshot.val().player2Name;
     gameState = snapshot.val().gameState;
     startScreen = snapshot.val().startScreen;
-    p1C = snapshot.val().player1Choice
-    p2C = snapshot.val().player2Choice
-
+    p1C = snapshot.val().player1Choice;
+    p2C = snapshot.val().player2Choice;
+       
     playerDisplay(p1C, p2C);
-
     checkGameState();
     goBtn();
     
+});
+
+
+database.ref("messages/").once("child_added", function(snapshot) {
+    displayMessages();
+}, function(errorObject) {
+    console.log("Errors handled: " + errorObject.code);
 });
 
 //___________________________________________////
@@ -215,6 +222,7 @@ function playerName() {
     // IF, playerName1 key-value is "" (empty).
     if (player1 === "") {
         whichPlayerAmI = "Player 1";
+        userName = nameHolder;
         // THEN, set nameHolder to value of the key-pair of player1Name.
         database.ref().update({
             player1Name: nameHolder,
@@ -225,6 +233,7 @@ function playerName() {
     // ELSE IF, playerName2 key-value is "" (empty).
     } else if (player2 === "") {
         whichPlayerAmI = "Player 2";
+        userName = nameHolder;
         // THEN, set nameHolder to value of the key-pair of player2Name.
         database.ref().update({
             player2Name: nameHolder,
@@ -372,17 +381,10 @@ function setGameScreen() {
         
                     '<!-- Row 1 (Game Title) -->' +
                     '<div class="row bg-light title-round px-3"><H1 class="pt-2">ROCK, PAPER, SCISSORS... GO!!!</H1></div>' +
-        
+                    // CHAT AREA IS HERE.
                     '<!-- Row 2 (Chat Area) -->' +
                     '<div class="row chat-area bg-primary pt-2">' +
-                        '<div id="chat-display-area">' +
-                            '<div class="mx-2">-</div>' +
-                            '<div class="mx-2">-</div>' +
-                            '<div class="mx-2">-</div>' +
-                            '<div class="mx-2">-</div>' +
-                            '<div class="mx-2">-</div>' +
-                            '<div class="mx-2">-</div>' +
-                            '<div class="mx-2">-</div>' +
+                        '<div id="chat-display-area" class="ml-3 mb-1">' +
                         '</div>' +
                     '</div>' +
         
@@ -628,12 +630,33 @@ function chatBtn() {
     $(document).on("click", "#inputGroup-sizing-sm", function() {
         console.log("#inputGroup-sizing-sm (Chat Button), has been clicked!");
         // Assign the value of the text-box into the variable: message.
-        message = $("#text-input").val().trim();
-        console.log(whichPlayerAmI + ": " + message);
-        $("#text-input").empty()
+        post = $("#text-input").val().trim();
+        let msgToStore = userName + ": " + post;
+        $("#text-input").val("");
         // Use PUSH to store the message in the messagesSection part of the (database)
-    });
+            var messagesRef = database.ref("messages/");
+            var newPostKey = messagesRef.push(msgToStore).key
+            console.log("newPostKey: " + newPostKey);
+        });
 } /// chatBtn();
+
+function displayMessages() {
+    database.ref("messages/").on("child_added", function(snapshot) {
+  
+        console.log(snapshot.val());
+        displayPosts = snapshot.val();
+        
+        var newDiv = $("<div>");
+        newDiv.text(displayPosts);
+        $("#chat-display-area").append(newDiv);
+    
+        // Handle the errors
+    }, function(errorObject) {
+        console.log("Errors handled: " + errorObject.code);
+    });
+}
+
+
 
 // Checks the database when (child is added) and refreshes the Chat Area Display.
 function chatAreaDisplay() {
@@ -657,6 +680,7 @@ function displayGameInfo() {
 function consoleClickCheck() {                                             //
     $(document).on("click", function() {
         console.log("Diagnostic-tool----------");
+        // console.log(nameHolder);
         console.log("-------------------------");   
     });
 } ///function to console.log on each click.                                //
