@@ -123,6 +123,7 @@ database.ref().on("value", function(snapshot) {
     
 });
 
+// On change in value in ("btnState/") on dbase, take the values for these key-pairs from the dbase and pass them into the ready/reset buttons.
 database.ref("btnState/").on("value", function(snapshot) {
     let ready = snapshot.val().readyState;
     let reset = snapshot.val().resetState;
@@ -130,6 +131,7 @@ database.ref("btnState/").on("value", function(snapshot) {
     resetBtnCheck(reset);
 });
 
+// On change in value in ("score/") on dbase, take the values for these key-pairs from the dbase and pass into scoreChecker function.
 database.ref("score/").on("value", function(snapshot) {
     let win1 = snapshot.val().w1;
     let win2 = snapshot.val().w2;
@@ -139,6 +141,7 @@ database.ref("score/").on("value", function(snapshot) {
     scoreChecker(win1,win2,loss1,loss2,rNum);
 });
 
+// Get player name data and pass into showPlayerName function.
 database.ref().on("value", function(snapshot) {
     player1 = snapshot.val().player1Name;
     player2 = snapshot.val().player2Name;
@@ -166,10 +169,6 @@ database.ref().on("value", function(snapshot) {
 // Functions____________________////
 
 // Start Screen //
-// Starting function to set key-pair, startScreen to TRUE.
-function userAtStartScreen() {
-
-} /// userAtStartScreen();
 
 // Checks the gameState from the database and informs the user if a game is in progress.
 // AND sets startScreen key-pair to TRUE.
@@ -286,7 +285,7 @@ function setGameScreen() {
                         '<!-- Col 1 (Player Name) -->' +
                         '<div class="col-4">' +
                             '<div>' +
-                                '<p class="d-flex align-items-start justify-content-center my-0 py-0 ">Player 1:</p>' +
+                                '<p class="d-flex align-items-start justify-content-center my-0 py-0 ">Player&nbsp;<span id="p-num-display">1</span>:</p>' +
                                 '<p id="player-name-panel" class="d-flex align-items-start justify-content-center my-0 py-0 "></p>' +
                             '</div>' +
                         '</div>' +
@@ -682,7 +681,7 @@ function tallyScores() {
     });
 } /// tallyScores();
 
-// Get the scores (and round!) from the dbase and display on the scoreboard.
+// Get the scores (and round number!) from the dbase and display on the scoreboard.
 function scoreChecker(p1W, p2W, p1L, p2L, rN) {
     // console.log("scoreChecker has been called");
     $("#w1").html(p1W);
@@ -819,12 +818,15 @@ function resetGame() {
     
 } /// resetGame();
 
-// Checks to see if user is Player 1 or 2, then displays the correct name from the database.
+// Checks to see if user is Player 1 or 2, then displays the correct name (and player NuMBER) from the database.
 function showPlayerName(pN1, pN2) {
     if (whichPlayerAmI === "Player 1") {
         $("#player-name-panel").html(pN1);
+        $("#p-num-display").text("1");
+
     } else if (whichPlayerAmI === "Player 2") {
         $("#player-name-panel").html(pN2);
+        $("#p-num-display").text("2");
     } 
 } /// showPlayerName(pN1,pN2);
 
