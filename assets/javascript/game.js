@@ -431,44 +431,46 @@ function choiceClicks() {
         if (whichPlayerAmI === "Player 1") {
             console.log("Player 1");
             switch(state) {
-                case "blank":
-                    $("#p1-display").attr("src", $(this).attr("src"));
-                break;
-    
                 case "rock":
-                    $("#p1-display").attr("src", "assets/images/rock.jpg");
-                break;
-    
+                    $("#p1-display").attr("src", rpsObj.rock);
+                    database.ref().update({
+                        player1Choice: "rock"
+                    });
+                    break;
                 case "paper":
-                    $("#p1-display").attr("src", $(this).attr("src"));
-                break;
-    
+                    $("#p1-display").attr("src", rpsObj.paper);
+                    database.ref().update({
+                        player1Choice: "paper"
+                    });
+                    break;
                 case "scissors":
-                    $("#p1-display").attr("src", $(this).attr("src"));
-                break;
+                    $("#p1-display").attr("src", rpsObj.scissors);
+                    database.ref().update({
+                        player1Choice: "scissors"
+                    });
+                    break;
             }
         } else if (whichPlayerAmI === "Player 2") {
             console.log("Player 2");
             switch(state) {
-                case "blank":
-                    $("#p2-display").attr("src", $(this).attr("data-rock"));
-                    $(this).attr("data-state", "rock");
-                break;
-    
                 case "rock":
-                    $("#p2-display").attr("src", $(this).attr("data-paper"));
-                    $("#p2-display").attr("data-state", "paper");
-                break;
-    
+                    $("#p2-display").attr("src", rpsObj.rock);
+                    database.ref().update({
+                        player2Choice: "rock"
+                    });
+                    break;
                 case "paper":
-                    $("#p2-display").attr("src", $(this).attr("data-scissors"));
-                    $("#p2-display").attr("data-state", "scissors");
-                break;
-    
+                    $("#p2-display").attr("src", rpsObj.paper);
+                    database.ref().update({
+                        player2Choice: "paper"
+                    });
+                    break;
                 case "scissors":
-                    $("#p2-display").attr("src", $(this).attr("data-blank"));
-                    $("#p2-display").attr("data-state", "blank");
-                break;    
+                    $("#p2-display").attr("src", rpsObj.scissors);
+                    database.ref().update({
+                        player2Choice: "scissors"
+                    });
+                    break;
             }
         }
     });
@@ -645,12 +647,12 @@ window.onbeforeunload = function (e) {
     if (gameState > 0) {
         database.ref().update({
             player1Name: "",
-            player2Name: ""
+            player2Name: "",
+            player1Choice: "",
+            player2Choice: ""
         });
     }
 } 
-//----------------------------------------------------------------------------------------------------//
-
 window.onunload = function (e) {
     if (gameState > 0) {
         database.ref().update({
@@ -663,6 +665,7 @@ window.onunload = function (e) {
         });
     }
 }
+//----------------------------------------------------------------------------------------------------//
 
 // Main Game Code ////
 userAtStartScreen();
