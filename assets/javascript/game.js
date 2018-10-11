@@ -127,7 +127,6 @@ database.ref().on("value", function(snapshot) {
 });
 
 database.ref("btnState/").on("value", function(snapshot) {
-    console.log("Does this run at all?");
     let st = snapshot.val().readyState;
     readyBtnCheck(st);
 })
@@ -432,13 +431,12 @@ function readyBtn() {
         // Check [Data-State] attribute for a value of: off, partial, or full.
         let state = $("#ready-btn").attr("data-state");
         // console.log(state);
-        // Switch statement, takes the variable 'state' and cycles through data-states: off(0)>partial(1)>full(2)
+        // Switch statement, takes the variable 'state' and cycles through data-states: off>partial>full
         switch(state) {
             case "off":
                 $("#ready-btn").attr("data-state", "partial");
                 $("#ready-btn").removeClass("bg-secondary");
                 $("#ready-btn").addClass("bg-warning");
-                // readyBtnState("partial"); 
                 database.ref("btnState/").update({
                     readyState: "partial"
                 });
@@ -447,17 +445,15 @@ function readyBtn() {
                 $("#ready-btn").attr("data-state", "full");
                 $("#ready-btn").removeClass("bg-warning");
                 $("#ready-btn").addClass("bg-success");
-                // readyBtnState("full"); 
                 database.ref("btnState/").update({
                     readyState: "full"
                 });
-                // gameStart();
+                gameStart();
                 break;
             case "full":
                 $("#ready-btn").attr("data-state", "off");
                 $("#ready-btn").removeClass("bg-success");
                 $("#ready-btn").addClass("bg-secondary");
-                // readyBtnState("off"); 
                 database.ref("btnState/").update({
                     readyState: "off"
                 });
@@ -465,70 +461,28 @@ function readyBtn() {
     });
 } /// readyBtn();
 
-// Updates the readyState key-value pair with the current state.
-// function readyBtnState(state) {
-//     database.ref("btnState/").update({
-//         readyState: state
-//     });
-// } /// readyBtnState(state); //off/partial/full//
-
+// Checks the value from the dbase, and changes the resetButton accordingly.
 function readyBtnCheck(state) {
-    console.log("readyBtnCheck has been called")
-    console.log(state);
-    // database.ref().once("value", function(snapshot) {
-        // var state = snapshot.val().readyState;
-        if (state === "partial") {
-            $("#ready-btn").attr("data-state", "partial");
-            $("#ready-btn").removeClass("bg-secondary");
-            $("#ready-btn").addClass("bg-warning");
-            // readyBtnState("partial"); 
-        }
-    // });
-
-    // database.ref().once("value", function(snapshot) {
-        // var state = snapshot.val().readyState;
-        if (state === "full") {
-            $("#ready-btn").attr("data-state", "full");
-            $("#ready-btn").removeClass("bg-warning");
-            $("#ready-btn").addClass("bg-success");
-            // readyBtnState("full"); 
-            // gameStart();
-            console.log("Technically, the game would start here");
-        }
-    // });
-
-    // database.ref().once("value", function(snapshot) {
-        // var state = snapshot.val().readyState;
-        if (state === "off") {
+    // console.log("readyBtnCheck has been called")
+    // console.log(state);
+        switch(state) {
+            case "off":
             $("#ready-btn").attr("data-state", "off");
             $("#ready-btn").removeClass("bg-success");
             $("#ready-btn").addClass("bg-secondary");
-            // readyBtnState("off"); 
+                break;
+            case "full":
+            $("#ready-btn").attr("data-state", "full");
+            $("#ready-btn").removeClass("bg-warning");
+            $("#ready-btn").addClass("bg-success");
+                break;
+            case "partial":
+            $("#ready-btn").attr("data-state", "partial");
+            $("#ready-btn").removeClass("bg-secondary");
+            $("#ready-btn").addClass("bg-warning");
+                break;
         }
-    // });
-
 } /// readyBtnCheck();
-
-// switch(state) {
-//     case "off":
-//         $("#ready-btn").attr("data-state", "partial");
-//         $("#ready-btn").removeClass("bg-secondary");
-//         $("#ready-btn").addClass("bg-warning");
-//         readyBtnState("partial"); 
-//         break;
-//     case "partial":
-//         $("#ready-btn").attr("data-state", "full");
-//         $("#ready-btn").removeClass("bg-warning");
-//         $("#ready-btn").addClass("bg-success");
-//         readyBtnState("full"); 
-//         gameStart();
-//         break;
-//     case "full":
-//         $("#ready-btn").attr("data-state", "off");
-//         $("#ready-btn").removeClass("bg-success");
-//         $("#ready-btn").addClass("bg-secondary");
-//         readyBtnState("off"); 
-// }
 
 // Calls the necessary functions to start each round.
 function gameStart() {
@@ -539,7 +493,7 @@ function gameStart() {
 
 // Sets up click functionality, for each <img> and stores both player's choices.
 function choiceClicks() {
-    console.log("choiceClicks(); function has been called");
+    // console.log("choiceClicks(); function has been called");
     // On user click:
     $(".choice").css("cursor", "pointer");
     $(document).on("click", ".choice", function() {
@@ -600,7 +554,7 @@ function choiceClicks() {
 
 // Starts a countdown to display: ROCK, PAPER, SCISSORS, GO! in the Top Panel Display.
 function topPanelStart() {
-    console.log("topPanelStart(); function has been called");
+    // console.log("topPanelStart(); function has been called");
     // Start a 5 sec. countdown.
     countdown = 5;
     var intervalId = setInterval(function() {
@@ -631,7 +585,7 @@ function topPanelStart() {
 
 // Checks to determine if player made a choice within the alotted 1 sec. time frame.
 function playerDefaultCheck() {
-    // console.log(this + "function has been called");
+    // console.log("playerDefaultCheck() function has been called");
     // IF, userChoice === "blank"
     if (userChoice === "blank") {
         // THEN, in Game Info Panel, display the variable: whichPlayerAmI + "failed to make a choice in time!" (database)
