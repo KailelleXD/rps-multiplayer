@@ -7,6 +7,8 @@ $(document).ready(function() {
 var nameHolder = "";
 var player1 = "";
 var player2 = "";
+var p1C = "";
+var p2C = "";
 
     // Variables that determine what to do based on if a user is Player 1 or 2.
 var whichPlayerAmI = ""; // "Player 1" or "Player 2"
@@ -100,10 +102,17 @@ database.ref().on("value", function(snapshot) {
     console.log("player2Name: " + snapshot.val().player2Name);
     console.log("gameState: " + snapshot.val().gameState);
     console.log("startScreen: " + snapshot.val().startScreen);
+    console.log("player1Choice: " + snapshot.val().player1Choice)
+    console.log("player2Choice: " + snapshot.val().player2Choice)
     player1 = snapshot.val().player1Name;
     player2 = snapshot.val().player2Name;
     gameState = snapshot.val().gameState;
     startScreen = snapshot.val().startScreen;
+    p1C = snapshot.val().player1Choice
+    p2C = snapshot.val().player2Choice
+
+    playerDisplay(p1C, p2C);
+
     checkGameState();
     goBtn();
     
@@ -432,19 +441,19 @@ function choiceClicks() {
             console.log("Player 1");
             switch(state) {
                 case "rock":
-                    $("#p1-display").attr("src", rpsObj.rock);
+                    // $("#p1-display").attr("src", rpsObj.rock);
                     database.ref().update({
                         player1Choice: "rock"
                     });
                     break;
                 case "paper":
-                    $("#p1-display").attr("src", rpsObj.paper);
+                    // $("#p1-display").attr("src", rpsObj.paper);
                     database.ref().update({
                         player1Choice: "paper"
                     });
                     break;
                 case "scissors":
-                    $("#p1-display").attr("src", rpsObj.scissors);
+                    // $("#p1-display").attr("src", rpsObj.scissors);
                     database.ref().update({
                         player1Choice: "scissors"
                     });
@@ -454,19 +463,19 @@ function choiceClicks() {
             console.log("Player 2");
             switch(state) {
                 case "rock":
-                    $("#p2-display").attr("src", rpsObj.rock);
+                    // $("#p2-display").attr("src", rpsObj.rock);
                     database.ref().update({
                         player2Choice: "rock"
                     });
                     break;
                 case "paper":
-                    $("#p2-display").attr("src", rpsObj.paper);
+                    // $("#p2-display").attr("src", rpsObj.paper);
                     database.ref().update({
                         player2Choice: "paper"
                     });
                     break;
                 case "scissors":
-                    $("#p2-display").attr("src", rpsObj.scissors);
+                    // $("#p2-display").attr("src", rpsObj.scissors);
                     database.ref().update({
                         player2Choice: "scissors"
                     });
@@ -585,12 +594,30 @@ function showPlayerName(pToChk) {
         // and display at #player-name
 } /// showPlayerName(playerToCheck);
 
-// Checks the user's choice and displays that choice in either the Player 1 or 2 Display Panel.
-function playerDisplay() {
-    // IF, whichPlayerAmI === "Player 1"
-    // THEN, using the variable userChoice as a reference, toggle (using a switch statement)
-        // the <img> using [data-type] to grab the src from [data-rock],[data-paper],[data-scissors], or [data-blank]; while targeting #player-display1
-    // ELSE, Same as above except we target #player-display2 instead.
+// Using pass-through arguments, we take player1Choice and player2Choice from the dbase and display the approriate image to both players.
+function playerDisplay(p1Choice, p2Choice) {
+        switch(p1Choice) {
+            case "rock":
+                $("#p1-display").attr("src", rpsObj.rock);
+                break;
+            case "paper":
+                $("#p1-display").attr("src", rpsObj.paper);
+                break;
+            case "scissors":
+                $("#p1-display").attr("src", rpsObj.scissors);
+                break;
+        }
+        switch(p2Choice) {
+            case "rock":
+                $("#p2-display").attr("src", rpsObj.rock);
+                break;
+            case "paper":
+                $("#p2-display").attr("src", rpsObj.paper);
+                break;
+            case "scissors":
+                $("#p2-display").attr("src", rpsObj.scissors);
+                break;
+        }
 } /// playerDisplay();
 
 
