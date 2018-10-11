@@ -45,6 +45,10 @@ This project is being created for a homework assignnment through my UCLAx coding
 #### This Document to be revised/updated as project progresses.
 
 ### Update-log:
+#### 10/10/2018 - 10:48pm
+* Complete:
+    * Chat area!
+
 #### 10/10/2018 - 12:49am
 * In-Process:
     * Coding all functions.
