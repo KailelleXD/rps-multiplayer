@@ -4,7 +4,8 @@ font-family: 'Mirza', cursive;
 */
 
 body {
-    background-image: url("https://picsum.photos/1920/1080");
+    /* background-color: rgb(186, 209, 214); */
+    background-color: rgb(48, 114, 139);
     font-family: 'Mirza', cursive;
     font-size: 105%;
     max-width: 1080px;
@@ -23,15 +24,11 @@ ul {
     list-style-position: inside;
 }
 
-.rps-panel {
-    /* width: 100%; */
+#emoji {
+    font-size: 150%;
 }
 
-.msg-panel {
-    /* width: 100%; */
-}
-
-.container {
+.main-wrap {
     width: 980px;
     border-color: black;
     border-style: solid;
@@ -39,6 +36,7 @@ ul {
 }
 
 .chat-panel {
+    /* background-color: rgb(187, 206, 211); */
     border-radius: 25px;
     border-color: black;
     border-style: solid;
@@ -66,11 +64,21 @@ ul {
     height: 50%;
 }
 
-.chat-panel {
-    background-color: rgb(21, 21, 85);
+.chat-button {
+    font-weight: bold;
 }
 
+#play-area {
+    width: 1120px;
+}
 
+#chat-box {
+    width: 940px;
+}
+
+#text-box {
+    background-color: rgb(222, 234, 236);
+}
 
 .center-block {
     display: block;
@@ -110,7 +118,8 @@ ul {
 }
 
 .game-panel {
-    color: rgb(235, 225, 221);
+    border-radius: 25px;
+    background-color: rgb(90, 124, 133);;
 }
 
 

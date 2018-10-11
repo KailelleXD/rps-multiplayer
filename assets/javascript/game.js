@@ -39,7 +39,6 @@ var gameState = 0;
 
 var readyState = 0;
 var resetState = 0;
-var resetBool = true;
 
     // Used to determine if someone is currently at the start screen or not.
 var startScreen = false;
@@ -59,7 +58,8 @@ rpsObj = {
     rock: "assets/images/rock.jpg",
     paper: "assets/images/paper.jpg",
     scissors: "assets/images/scissors.jpg",
-    blank: "assets/images/blank.jpg"
+    blank: "assets/images/blank.jpg",
+    no: "assets/images/no.jpg"
 };
 
 winPanelObj = {
@@ -124,6 +124,7 @@ database.ref().on("value", function(snapshot) {
     
 });
 
+// On change in value in ("btnState/") on dbase, take the values for these key-pairs from the dbase and pass them into the ready/reset buttons.
 database.ref("btnState/").on("value", function(snapshot) {
     let ready = snapshot.val().readyState;
     let reset = snapshot.val().resetState;
@@ -131,6 +132,7 @@ database.ref("btnState/").on("value", function(snapshot) {
     resetBtnCheck(reset);
 });
 
+// On change in value in ("score/") on dbase, take the values for these key-pairs from the dbase and pass into scoreChecker function.
 database.ref("score/").on("value", function(snapshot) {
     let win1 = snapshot.val().w1;
     let win2 = snapshot.val().w2;
@@ -140,6 +142,7 @@ database.ref("score/").on("value", function(snapshot) {
     scoreChecker(win1,win2,loss1,loss2,rNum);
 });
 
+// Get player name data and pass into showPlayerName function.
 database.ref().on("value", function(snapshot) {
     player1 = snapshot.val().player1Name;
     player2 = snapshot.val().player2Name;
@@ -167,18 +170,6 @@ database.ref().on("value", function(snapshot) {
 // Functions____________________////
 
 // Start Screen //
-// Starting function to set key-pair, startScreen to TRUE.
-function userAtStartScreen() {
-    database.ref().update({
-        startScreen: true
-    });
-    database.ref("btnState/").update({
-        readyState: "off"
-    });
-    database.ref("score/").update({
-        round: 1
-    })
-}
 
 // Checks the gameState from the database and informs the user if a game is in progress.
 // AND sets startScreen key-pair to TRUE.
@@ -284,10 +275,10 @@ function setGameScreen() {
     // Replaces HTML elements on DOM with HTML to build the game-screen.
     $("#screen").html(
 
-        '<div class="row justify-content-center">' +
+        '<div id="play-area" class="row justify-content-center">' +
                 
                 '<!-- Main Column 1 -->' +
-                '<div id="rps-panel" class="content-wrapper col-4 bg-primary mx-1 p-1 rps-image">' +
+                '<div id="rps-panel" class=" col-4 bg-primary mx-1 p-1 rps-image">' +
                     
                     '<!-- Sub Row 1 (Player Name, Top Display Panel, Round Number) -->' +
                     '<div class="row mt-1 mb-3">' +
@@ -295,7 +286,7 @@ function setGameScreen() {
                         '<!-- Col 1 (Player Name) -->' +
                         '<div class="col-4">' +
                             '<div>' +
-                                '<p class="d-flex align-items-start justify-content-center my-0 py-0 ">Player 1:</p>' +
+                                '<p class="d-flex align-items-start justify-content-center my-0 py-0 ">Player&nbsp;<span id="p-num-display">1</span>:</p>' +
                                 '<p id="player-name-panel" class="d-flex align-items-start justify-content-center my-0 py-0 "></p>' +
                             '</div>' +
                         '</div>' +
@@ -402,7 +393,7 @@ function setGameScreen() {
                 '</div>' +
         
                 '<!-- Main Column 2 -->' +
-                '<div id="msg-panel" class="content-wrapper col-6 mx-1 chat-panel">' +
+                '<div id="msg-panel" class="content-wrapper col-6 mx-1 bg-primary chat-panel">' +
         
                     '<!-- Row 1 (Game Title) -->' +
                     '<div class="row bg-light title-round px-3"><H1 class="pt-2">ROCK, PAPER, SCISSORS... GO!!!</H1></div>' +
@@ -411,20 +402,19 @@ function setGameScreen() {
                         '<div id="chat-display-area" class="ml-3 mb-1">' +
                         '</div>' +
                     '</div>' +
+            '</div>' +
         
-                    '<!-- Row 3 (Chat Entry) -->' +
-                    '<div class="row chat-entry d-flex align-items-end">' +
-                        '<div class="input-group input-group-sm mb-3">' +
-                            '<div class="input-group-prepend">' +
-                                '<button class="input-group-text" id="inputGroup-sizing-sm">CHAT</button>' +
-                            '</div>' +
-                            '<input type="text" id="text-input" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">' +
+            '<div class="row content-wrapper">' +
+            '<!-- Row 3 (Chat Entry) -->' +
+            '<div id="game-info-panel" class="chat-panel game-panel mt-2 px-0 pt-4 pb-1 mx-auto">' +
+                '<div id="chat-box" class="chat-entry d-flex align-items-end">' +
+                    '<div class="input-group input-group-sm mb-3">' +
+                        '<div class="input-group-prepend">' +
+                            '<button class="chat-button input-group-text border border-dark" id="inputGroup-sizing-sm">CHAT</button>' +
                         '</div>' +
-                    '</div>' +
-                    '<div id="game-info-panel" class="game-panel m-0 p-0">' +
+                        '<input type="text" id="text-input" class="form-control border border-dark" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">' +
                     '</div>' +
                 '</div>' +
-        
             '</div>'
         
             );
@@ -574,7 +564,6 @@ function topPanelStart() {
     // console.log("topPanelStart(); function has been called");
     // Start a 5 sec. countdown.
     countdown = 5;
-    resetBool = false;
     var intervalId = setInterval(function() {
         countdown--;
         switch(countdown) {
@@ -592,11 +581,12 @@ function topPanelStart() {
                 break;
             case 0:
                 $("#tp-display").attr("src", topPanelObj.blank);
+                $("#p1-display").attr("src", rpsObj.no)
+                $("#p2-display").attr("src", rpsObj.no)
                 playerDefaultCheck(); 
                 break;
             case -1:
                 $("#tp-display").attr("src", topPanelObj.rps);
-                resetBool = true;
                 clearInterval(intervalId);
                 
         }
@@ -693,7 +683,7 @@ function tallyScores() {
     });
 } /// tallyScores();
 
-// Get the scores (and round!) from the dbase and display on the scoreboard.
+// Get the scores (and round number!) from the dbase and display on the scoreboard.
 function scoreChecker(p1W, p2W, p1L, p2L, rN) {
     // console.log("scoreChecker has been called");
     $("#w1").html(p1W);
@@ -707,13 +697,12 @@ function scoreChecker(p1W, p2W, p1L, p2L, rN) {
 function nextRound() {
     // Starts a 3 sec. countdown.
     shortCountdown = 3;
-    resetBool = false;
     var intervalId = setInterval(function() {
         shortCountdown--;
         console.log(shortCountdown);
         if (shortCountdown === 0) {
             
-            chgDisplay("blank","blank");
+            clrDisplay("blank");
 
             $("#tp-display").attr("src", topPanelObj.rps);
             $("#win-panel").attr("src", winPanelObj.blank);
@@ -730,8 +719,7 @@ function nextRound() {
                 round: round
             });
 
-            infoPoster("Starting Round " + round + ", Both players click READY to start!");
-            resetBool = true;
+            newInfoMsg("Starting Round " + round + ", Both players click READY to start!");
             clearInterval(intervalId);                 
         }
     }, 1000);
@@ -739,38 +727,39 @@ function nextRound() {
 
 // Sets up click functionality, checks the btn data-state: off, partial, full. (refer to research-list.js)
 function resetBtn() {
-        // On user click:
-        $(document).on("click", "#reset-btn", function() {
-            // Check [Data-State] attribute for a value of: off, partial, or full.
-            let state = $("#reset-btn").attr("data-state");
-            // console.log(state);
-            // Switch statement, takes the variable 'state' and cycles through data-states: off>partial>full
-            switch(state) {
-                case "off":
-                    $("#reset-btn").attr("data-state", "partial");
-                    $("#reset-btn").removeClass("bg-secondary");
-                    $("#reset-btn").addClass("bg-warning");
+    $("#reset-btn").css("cursor", "pointer");
+    // On user click:
+    $(document).on("click", "#reset-btn", function() {
+        // Check [Data-State] attribute for a value of: off, partial, or full.
+        let state = $("#reset-btn").attr("data-state");
+        // console.log(state);
+        // Switch statement, takes the variable 'state' and cycles through data-states: off>partial>full
+        switch(state) {
+            case "off":
+                $("#reset-btn").attr("data-state", "partial");
+                $("#reset-btn").removeClass("bg-secondary");
+                $("#reset-btn").addClass("bg-warning");
                     database.ref("btnState/").update({
                         resetState: "partial"
                     });
-                    break;
-                case "partial":
-                    $("#reset-btn").attr("data-state", "full");
-                    $("#reset-btn").removeClass("bg-warning");
-                    $("#reset-btn").addClass("bg-success");
+                break;
+            case "partial":
+                $("#reset-btn").attr("data-state", "full");
+                $("#reset-btn").removeClass("bg-warning");
+                $("#reset-btn").addClass("bg-success");
                     database.ref("btnState/").update({
                         resetState: "full"
                     });
-                    break;
-                case "full":
-                    $("#reset-btn").attr("data-state", "off");
-                    $("#reset-btn").removeClass("bg-success");
-                    $("#reset-btn").addClass("bg-secondary");
+                break;
+            case "full":
+                $("#reset-btn").attr("data-state", "off");
+                $("#reset-btn").removeClass("bg-success");
+                $("#reset-btn").addClass("bg-secondary");
                     database.ref("btnState/").update({
                         resetState: "off"
                     });
-                }   
-            });    
+        }   
+    });    
 } /// resetBtn();
 
 function resetBtnCheck(state) {
@@ -779,18 +768,20 @@ function resetBtnCheck(state) {
     switch(state) {
         case "off":
         $("#reset-btn").attr("data-state", "off");
-        $("#reset-btn").removeClass("bg-success");
+        $("#reset-btn").removeClass("bg-warning bg-success");
         $("#reset-btn").addClass("bg-secondary");
             break;
         case "full":
         $("#reset-btn").attr("data-state", "full");
-        $("#reset-btn").removeClass("bg-warning");
+        $("#reset-btn").removeClass("bg-secondary bg-warning");
         $("#reset-btn").addClass("bg-success");
+            database.ref("messages/").remove();
+            newInfoMsg("Game has been reset!");
             resetGame();
             break;
         case "partial":
         $("#reset-btn").attr("data-state", "partial");
-        $("#reset-btn").removeClass("bg-secondary");
+        $("#reset-btn").removeClass("bg-success bg-secondary");
         $("#reset-btn").addClass("bg-warning");
             break;
     }
@@ -822,15 +813,22 @@ function resetGame() {
         readyState: "off"
     });
 
-    chgDisplay("","");
+    clrDisplay("");
+    database.ref("messages/").remove();
+    
+
+    
 } /// resetGame();
 
-// Checks to see if user is Player 1 or 2, then displays the correct name from the database.
+// Checks to see if user is Player 1 or 2, then displays the correct name (and player NuMBER) from the database.
 function showPlayerName(pN1, pN2) {
     if (whichPlayerAmI === "Player 1") {
         $("#player-name-panel").html(pN1);
+        $("#p-num-display").text("1");
+
     } else if (whichPlayerAmI === "Player 2") {
         $("#player-name-panel").html(pN2);
+        $("#p-num-display").text("2");
     } 
 } /// showPlayerName(pN1,pN2);
 
@@ -864,18 +862,18 @@ function playerDisplay(p1Choice, p2Choice) {
         }
 } /// playerDisplay();
 
-function chgDisplay(p1Choice, p1Choice) {
+function clrDisplay(replace) {
     database.ref().update({
-        player1Choice: p1Choice,
-        player2Choice: p2Choice
-    })
-} /// chgDisplay("","");
+        player1Choice: replace,
+        player2Choice: replace
+    });
+} /// clrDisplay("");
 
 // Chat Area //
 // Sets up click functionality, takes text info from text-box and stores it in the proper location in the database.
 function chatBtn() {
     // On user click:
-    $(document).on("click", "#inputGroup-sizing-sm", function() {
+    $(document).on("click", ".chat-button", function() {
         // console.log("#inputGroup-sizing-sm (Chat Button), has been clicked!");
         // Assign the value of the text-box into the variable: message.
         post = $("#text-input").val().trim();
@@ -916,6 +914,12 @@ function infoPoster(msg) {
             var gameInfoRef = database.ref("messages/");
             gameInfoRef.push(msg).key
 } /// infoPoster("Place msg in quotes here");
+
+function newInfoMsg(msg) {
+    if (whichPlayerAmI === "Player 1") {
+    infoPoster(msg);
+    }
+}
 
 // Checks the database when (child is added) and refreshes the Game Info Display.
 function displayGameInfo() {
@@ -988,7 +992,24 @@ window.onunload = function (e) {
 //----------------------------------------------------------------------------------------------------//
 
 // Main Game Code ////
-userAtStartScreen();
+// userAtStartScreen();
 hideStartInfo();
 
 });  ///$(document).ready(function() {});
+
+// On document load set the values of the following key-pairs and set the startScreen bool to true.
+$(window).on("load",function() {
+    firebase.database().ref().update({
+        startScreen: true
+    });
+    firebase.database().ref("btnState/").update({
+        readyState: "off"
+    });
+    firebase.database().ref("score/").update({
+        round: 1,
+        w1: 0,
+        w2: 0,
+        l1: 0,
+        l2: 0
+    })
+});
