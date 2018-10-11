@@ -401,20 +401,19 @@ function setGameScreen() {
                         '<div id="chat-display-area" class="ml-3 mb-1">' +
                         '</div>' +
                     '</div>' +
+            '</div>' +
         
-                    '<!-- Row 3 (Chat Entry) -->' +
-                    '<div class="row chat-entry d-flex align-items-end">' +
-                        '<div class="input-group input-group-sm mb-3">' +
-                            '<div class="input-group-prepend">' +
-                                '<button class="input-group-text" id="inputGroup-sizing-sm">CHAT</button>' +
-                            '</div>' +
-                            '<input type="text" id="text-input" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">' +
+            '<div class="row">' +
+            '<!-- Row 3 (Chat Entry) -->' +
+            '<div id="game-info-panel" class="chat-panel game-panel mt-2 px-3 pt-4 pb-1 mx-auto">' +
+                '<div id="chat-box" class="row chat-entry d-flex align-items-end">' +
+                    '<div class="input-group input-group-sm mb-3">' +
+                        '<div class="input-group-prepend">' +
+                            '<button class="chat-button input-group-text" id="inputGroup-sizing-sm">CHAT</button>' +
                         '</div>' +
-                    '</div>' +
-                    '<div id="game-info-panel" class="game-panel m-0 p-0">' +
+                        '<input type="text" id="text-box" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">' +
                     '</div>' +
                 '</div>' +
-        
             '</div>'
         
             );
@@ -871,7 +870,7 @@ function chgDisplay(p1Choice, p1Choice) {
 // Sets up click functionality, takes text info from text-box and stores it in the proper location in the database.
 function chatBtn() {
     // On user click:
-    $(document).on("click", "#inputGroup-sizing-sm", function() {
+    $(document).on("click", ".chat-button", function() {
         // console.log("#inputGroup-sizing-sm (Chat Button), has been clicked!");
         // Assign the value of the text-box into the variable: message.
         post = $("#text-input").val().trim();
