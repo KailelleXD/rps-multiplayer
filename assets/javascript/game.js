@@ -118,13 +118,6 @@ database.ref().on("value", function(snapshot) {
     
 });
 
-
-database.ref("messages/").once("child_added", function(snapshot) {
-    displayMessages();
-}, function(errorObject) {
-    console.log("Errors handled: " + errorObject.code);
-});
-
 //___________________________________________////
 
 //___________________________////
@@ -192,7 +185,7 @@ function goBtn() {
             noNameCheck();
         });
     } else {
-        console.log("#go-btn should not be functioning.");
+        // console.log("#go-btn should not be functioning.");
     }
 } /// goBtn();
 
@@ -217,8 +210,8 @@ function noNameCheck() {
 
 // Checks the database to find out if the user is player 1 or player 2 or IF the game is already in progress.
 function playerName() {
-    console.log("playerName(); function has been called");
-    console.log("player1: " + player1 + " / " + "player2: " + player2);
+    // console.log("playerName(); function has been called");
+    // console.log("player1: " + player1 + " / " + "player2: " + player2);
     // IF, playerName1 key-value is "" (empty).
     if (player1 === "") {
         whichPlayerAmI = "Player 1";
@@ -228,7 +221,7 @@ function playerName() {
             player1Name: nameHolder,
             gameState: 1,            
         });
-        console.log("player1: " + player1);
+        // console.log("player1: " + player1);
         setGameScreen();
     // ELSE IF, playerName2 key-value is "" (empty).
     } else if (player2 === "") {
@@ -239,7 +232,7 @@ function playerName() {
             player2Name: nameHolder,
             gameState: 2,            
         });
-        console.log("player2: " + player2);
+        // console.log("player2: " + player2);
         setGameScreen();
     // ELSE, inform the user to: "Game in Session, please wait..."
     } else {
@@ -381,7 +374,6 @@ function setGameScreen() {
         
                     '<!-- Row 1 (Game Title) -->' +
                     '<div class="row bg-light title-round px-3"><H1 class="pt-2">ROCK, PAPER, SCISSORS... GO!!!</H1></div>' +
-                    // CHAT AREA IS HERE.
                     '<!-- Row 2 (Chat Area) -->' +
                     '<div class="row chat-area bg-primary pt-2">' +
                         '<div id="chat-display-area" class="ml-3 mb-1">' +
@@ -398,14 +390,14 @@ function setGameScreen() {
                         '</div>' +
                     '</div>' +
                     '<div id="game-info-panel" class="game-panel m-0 p-0">' +
-                        '<div>~ Player 1: Stevo, has joined the game.</div>' +
-                        '<div>~ Waiting for Player 2...</div>' +
                     '</div>' +
                 '</div>' +
         
             '</div>'
         
             );
+
+            displayMsgsLive();
             chatBtn();
             choiceClicks();
 } /// setGameScreen();
@@ -437,10 +429,10 @@ function choiceClicks() {
     $(".choice").css("cursor", "pointer");
     $(document).on("click", ".choice", function() {
         let state = $(this).attr("data-state");
-        console.log("You clicked " + state + "!");
+        // console.log("You clicked " + state + "!");
 
         if (whichPlayerAmI === "Player 1") {
-            console.log("Player 1");
+            // console.log("Player 1");
             switch(state) {
                 case "rock":
                     // $("#p1-display").attr("src", rpsObj.rock);
@@ -462,7 +454,7 @@ function choiceClicks() {
                     break;
             }
         } else if (whichPlayerAmI === "Player 2") {
-            console.log("Player 2");
+            // console.log("Player 2");
             switch(state) {
                 case "rock":
                     // $("#p2-display").attr("src", rpsObj.rock);
@@ -628,7 +620,7 @@ function playerDisplay(p1Choice, p2Choice) {
 function chatBtn() {
     // On user click:
     $(document).on("click", "#inputGroup-sizing-sm", function() {
-        console.log("#inputGroup-sizing-sm (Chat Button), has been clicked!");
+        // console.log("#inputGroup-sizing-sm (Chat Button), has been clicked!");
         // Assign the value of the text-box into the variable: message.
         post = $("#text-input").val().trim();
         let msgToStore = userName + ": " + post;
@@ -636,14 +628,14 @@ function chatBtn() {
         // Use PUSH to store the message in the messagesSection part of the (database)
             var messagesRef = database.ref("messages/");
             var newPostKey = messagesRef.push(msgToStore).key
-            console.log("newPostKey: " + newPostKey);
+            // console.log("newPostKey: " + newPostKey);
         });
 } /// chatBtn();
 
 function displayMessages() {
     database.ref("messages/").on("child_added", function(snapshot) {
   
-        console.log(snapshot.val());
+        // console.log(snapshot.val());
         displayPosts = snapshot.val();
         
         var newDiv = $("<div>");
@@ -651,6 +643,14 @@ function displayMessages() {
         $("#chat-display-area").append(newDiv);
     
         // Handle the errors
+    }, function(errorObject) {
+        console.log("Errors handled: " + errorObject.code);
+    });
+}
+
+function displayMsgsLive () {
+    database.ref("messages/").once("child_added", function(snapshot) {
+        displayMessages();
     }, function(errorObject) {
         console.log("Errors handled: " + errorObject.code);
     });
@@ -680,7 +680,6 @@ function displayGameInfo() {
 function consoleClickCheck() {                                             //
     $(document).on("click", function() {
         console.log("Diagnostic-tool----------");
-        // console.log(nameHolder);
         console.log("-------------------------");   
     });
 } ///function to console.log on each click.                                //
@@ -702,6 +701,7 @@ window.onbeforeunload = function (e) {
             player1Choice: "",
             player2Choice: ""
         });
+        database.ref("messages/").remove();
     }
 } 
 window.onunload = function (e) {
