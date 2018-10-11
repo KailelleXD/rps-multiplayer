@@ -19,6 +19,8 @@ var playerToCheck = ""; // "p1" or "p2"
 var userChoice = "blank";
 var p1Choice = ""; //
 var p2Choice = ""; // might not need these.
+var player1Name = "";
+var player2Name = "";
 
     // Variables to send message and game info strings to the firebase realtime database.
 var post = "";
@@ -124,9 +126,13 @@ database.ref().on("value", function(snapshot) {
     
 });
 
-database.ref().once("value", function(snapshot) {
-    readyBtnCheck();
+database.ref("btnState/").on("value", function(snapshot) {
+    console.log("Does this run at all?");
+    let st = snapshot.val().readyState;
+    readyBtnCheck(st);
 })
+
+
 
 //___________________________________________////
 
@@ -153,7 +159,7 @@ function userAtStartScreen() {
     database.ref().update({
         startScreen: true
     });
-    database.ref().update({
+    database.ref("btnState/").update({
         readyState: "off"
     });
 }
@@ -432,62 +438,74 @@ function readyBtn() {
                 $("#ready-btn").attr("data-state", "partial");
                 $("#ready-btn").removeClass("bg-secondary");
                 $("#ready-btn").addClass("bg-warning");
-                readyBtnState("partial"); 
+                // readyBtnState("partial"); 
+                database.ref("btnState/").update({
+                    readyState: "partial"
+                });
                 break;
             case "partial":
                 $("#ready-btn").attr("data-state", "full");
                 $("#ready-btn").removeClass("bg-warning");
                 $("#ready-btn").addClass("bg-success");
-                readyBtnState("full"); 
+                // readyBtnState("full"); 
+                database.ref("btnState/").update({
+                    readyState: "full"
+                });
                 // gameStart();
                 break;
             case "full":
                 $("#ready-btn").attr("data-state", "off");
                 $("#ready-btn").removeClass("bg-success");
                 $("#ready-btn").addClass("bg-secondary");
-                readyBtnState("off"); 
+                // readyBtnState("off"); 
+                database.ref("btnState/").update({
+                    readyState: "off"
+                });
         }
     });
 } /// readyBtn();
 
 // Updates the readyState key-value pair with the current state.
-function readyBtnState(state) {
-    database.ref().update({
-        readyState: state
-    });
-} /// readyBtnState(state); //off/partial/full//
+// function readyBtnState(state) {
+//     database.ref("btnState/").update({
+//         readyState: state
+//     });
+// } /// readyBtnState(state); //off/partial/full//
 
-function readyBtnCheck() {
-    database.ref().once("value", function(snapshot) {
-        var state = snapshot.val().readyState;
-        if (state === "off") {
+function readyBtnCheck(state) {
+    console.log("readyBtnCheck has been called")
+    console.log(state);
+    // database.ref().once("value", function(snapshot) {
+        // var state = snapshot.val().readyState;
+        if (state === "partial") {
             $("#ready-btn").attr("data-state", "partial");
             $("#ready-btn").removeClass("bg-secondary");
             $("#ready-btn").addClass("bg-warning");
-            readyBtnState("partial"); 
+            // readyBtnState("partial"); 
         }
-    });
+    // });
 
-    database.ref().once("value", function(snapshot) {
-        var state = snapshot.val().readyState;
-        if (state === "partial") {
+    // database.ref().once("value", function(snapshot) {
+        // var state = snapshot.val().readyState;
+        if (state === "full") {
             $("#ready-btn").attr("data-state", "full");
             $("#ready-btn").removeClass("bg-warning");
             $("#ready-btn").addClass("bg-success");
-            readyBtnState("full"); 
-            gameStart();
+            // readyBtnState("full"); 
+            // gameStart();
+            console.log("Technically, the game would start here");
         }
-    });
+    // });
 
-    database.ref().once("value", function(snapshot) {
-        var state = snapshot.val().readyState;
+    // database.ref().once("value", function(snapshot) {
+        // var state = snapshot.val().readyState;
         if (state === "off") {
             $("#ready-btn").attr("data-state", "off");
             $("#ready-btn").removeClass("bg-success");
             $("#ready-btn").addClass("bg-secondary");
-            readyBtnState("off"); 
+            // readyBtnState("off"); 
         }
-    });
+    // });
 
 } /// readyBtnCheck();
 
