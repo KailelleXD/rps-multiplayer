@@ -3,6 +3,11 @@
 ## Motivation
 This project is being created for a homework assignnment through my UCLAx coding bootcamp. My primary motivation beyond the due date on Oct. 11th is a genuine interest in learning how to work with firebase as well as learning how to structure code to focus on multiplayer aspects to serve as a solid foundation in my growth as a developer.
 
+## Screenshots
+
+![screenshot-rps-rules.jpg](https://images.zenhubusercontent.com/5bb4428d58d3b92dfedf3084/a48852c4-ca0e-4fcb-a3cb-26f338d28f1c)
+![screenshot-rps-game.JPG](https://images.zenhubusercontent.com/5bb4428d58d3b92dfedf3084/1441cae7-cf31-4ef0-92af-0c1f7ed88a74)
+
 ### Technology Used
 * HTML
 * CSS
